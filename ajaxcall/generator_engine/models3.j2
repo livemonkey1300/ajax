@@ -1,0 +1,45 @@
+from django.db import models
+
+from django.template import loader, Context
+from django.template.loader import render_to_string
+from django.utils.safestring import mark_safe
+from django.template.loader import get_template
+from django.core.validators import MaxValueValidator, MinValueValidator
+
+
+
+// Model
+{% for model in models %}
+class {{model.Name|upper}}(models.Model):
+{% if model.Choice %}
+{% if model.Choice.select %}
+  {{model.Choice.select|upper}}_CHOICE = ({% for choice in model.Choice.fields %}('{{choice.field}}','{{choice.verbose_name}}'){% if loop.last %}{% else %},{% endif %}{% endfor %})
+  {% for choice in model.Choice.fields %}{% if loop.first %}{{model.Choice.select|lower}} = models.CharField(max_length=255,choices={{model.Choice.select|upper}}_CHOICE,default='{{choice.field}}',)
+
+  def __str__(self):
+      return self.{{model.Name|lower}}
+
+  {% endif %}
+  {% endfor %}
+  {% else %}
+  {% for choice in model.Choice %}
+    {{ choice.field }}  = models.BooleanField(default=False,verbose_name='{{ choice.verbose_name }}')
+  {% endfor %}
+  {% endif %}
+
+{% endfor %}
+
+{% endif %}
+  def __str__(self):
+      return self.{{model.Name|lower}}_name
+
+{% endfor %}
+
+class {{APP|upper}}APP(models.Model):
+{% for field in fields %}
+  {{field.Name}} = {% if field.model.Type == 'number' %} models.IntegerField(default={{ field.model.Default }},validators=[MinValueValidator({{ field.model.Min }}), MaxValueValidator({{ field.model.Max }})]) {% endif %}
+
+{% endfor %}
+{% for model in models %}
+  {{model.Name|lower}} = models.OneToOneField({{model.Name|upper}},on_delete=models.CASCADE)
+{% endfor %}

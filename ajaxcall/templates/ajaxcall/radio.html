@@ -1,0 +1,13 @@
+<div class="form-group row">
+  <label for="input{{ name }}" class="col-sm-2 col-form-label">{{ name }}</label>
+  <div class="col-sm-10">
+    {% for i in data %}
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="{{ name }}" id="{{ name }}{{i.id}}" value="{{i.id}}"  fsub={{Form_Name}}>
+      <label class="form-check-label" for="{{ name }}{{i.id}}">
+        {{ i.Value }}
+      </label>
+    </div>
+    {% endfor %}
+    </div>
+</div>
