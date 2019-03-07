@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'Home.apps.HomeConfig',
     'ajaxcall.apps.AjaxcallConfig',
+    'virtual_machine.apps.VirtualMachineConfig'
 ]
 
 MIDDLEWARE = [

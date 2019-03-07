@@ -35,6 +35,7 @@ def call(request,field=False,fsub=False):
                     calc += request.session['lookup_table'][field][i]
                 request.session[fsub][field]['price'] = calc
                 request.session[fsub][field]['total'] = round(request.session[fsub][field]['price'], 2)
+                print(request.session['lookup_table'])
                 price = request.session[fsub][field]['total']
             except Exception as e:
                 request.session[fsub][field]['total'] = round(request.session[fsub][field]['price'] * float(request.session[fsub][field]['value']), 2)

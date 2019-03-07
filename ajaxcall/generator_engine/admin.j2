@@ -1,0 +1,23 @@
+from django.contrib import admin
+
+# Register your models here.
+from .models import {% for model in models %}{% if not model.Choice.select %}{{model.Name|upper}} , {% endif %}{% endfor %}{{APP|upper}}APP
+
+{% for model in models %}
+{% if not model.Choice.select %}
+class {{model.Name|upper}}_Inline(admin.TabularInline):
+  model = {{model.Name|upper}}
+  extra = 0
+{% endif %}
+{% endfor %}
+
+class {{APP|upper}}APPAdmin(admin.ModelAdmin):
+    inlines = [{% for model in models %}{% if not model.Choice.select %}{{model.Name|upper}}_Inline{% if loop.last %}{% else %},{% endif %}{% endif %}{% endfor %}]
+
+
+{% for model in models %}
+{% if not model.Choice.select %}
+admin.site.register({{model.Name|upper}})
+{% endif %}
+{% endfor %}
+admin.site.register({{APP|upper}}APP,{{APP|upper}}APPAdmin)

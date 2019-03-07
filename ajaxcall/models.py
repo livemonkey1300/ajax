@@ -94,23 +94,30 @@ class Model_Choices_Group(models.Model):
     def get_field_name(self):
         return self.Name.lower().replace(' ','_')
 
-    def get_form_choice(self,select=False):
+    def get_form_choice(self,select=False,nice_name=False):
         ch = []
         cho = {}
         if select:
             select_to = ch
-            cho = { 'select' : select , 'fields' : select_to }
+            cho = { 'select' : select , 'fields' : select_to , 'nice_name' : nice_name }
         if len(self.choices.all()) > 0 :
             for i in self.choices.all():
-                ch.append({ 'field' : re.sub('^[0-9]+' , '' , i.Value.lower().replace(' ','').replace('+' , '').replace('-' , '')) , 'verbose_name' : i.Value })
+                if select:
+                    field = i.Value
+                else:
+                    field = re.sub('^[0-9]+' , '' , i.Value.lower().replace(' ','').replace('+' , '').replace('-' , ''))
+                ch.append({ 'field' :  field , 'verbose_name' : i.Value ,  'nice_name' : nice_name  })
             if select:
                 cho['fields'] = ch
                 return cho
             return ch
         if len(self.choices_price.all()) > 0 :
             for i in self.choices_price.all():
-                print(i)
-                ch.append({ 'field' : re.sub('^[0-9]+' , '' ,i.Value.lower().replace(' ','').replace('+' , '').replace('-' , '')) , 'verbose_name' : i.Value })
+                if select:
+                    field = i.Value
+                else:
+                    field = re.sub('^[0-9]+' , '' , i.Value.lower().replace(' ','').replace('+' , '').replace('-' , ''))
+                ch.append({ 'field' : field , 'verbose_name' : i.Value ,  'nice_name' : nice_name })
             if select:
                 cho['fields'] = ch
                 return cho
@@ -120,6 +127,7 @@ class Model_Choices_Group(models.Model):
     def get_field(self,request=False,session=False,model_name=False):
         value = ''
         print('Inside Get Field' , self.get_field_name())
+        sub = False
         try:
             value = session['value']
         except KeyError:
@@ -136,11 +144,19 @@ class Model_Choices_Group(models.Model):
          if not session['price'] > float(0):
              session['price'] = float(0)
          for i in self.choices_price.all():
+            sub_choices = []
             request.session['lookup_table'][model_name].update( { i.id : i.price } )
+            if len(i.sub_choices.all()) > 0:
+                request.session['lookup_table']['sub_%s' % model_name][i.id] = []
+                for z in i.sub_choices.all():
+                    request.session['lookup_table']['sub_%s' % model_name][i.id].append( { z.id : z.Value } )
+                    sub_choices.append(z)
+                print(sub_choices)
+                sub = { 'data' : sub_choices , 'name' : 'sub_%s' % model_name , 'value' : 0 , 'template' : 'ajaxcall/%s.html' % self.template }
          val = []
          for i in value:
              val.append(int(i))
-         return { 'data' :  self.choices_price.all() , 'name' : model_name , 'value' : val , 'template' : 'ajaxcall/%s.html' % self.template }
+         return { 'data' :  self.choices_price.all() , 'name' : model_name , 'value' : val , 'template' : 'ajaxcall/%s.html' % self.template , 'sub' : sub }
          # return  mark_safe(render_to_string('ajaxcall/%s.html' % self.template , context ))
 
     class Meta:
@@ -196,11 +212,11 @@ class Model_Inputs(models.Model):
     def valid_model_entery(self):
         if self.choices:
             if self.choices.template == 'checkbox':
-                return self.choices.get_form_choice()
+                return self.choices.get_form_choice(nice_name=self.Name)
         if self.choices:
             if self.choices.template == 'radio' or self.choices.template == 'select':
                 print('\n OK \n')
-                return self.choices.get_form_choice(self.get_model_name())
+                return self.choices.get_form_choice(self.get_model_name(),self.Name)
         return False
 
     def valid_model_type(self):

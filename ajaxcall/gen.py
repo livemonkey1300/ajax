@@ -23,11 +23,19 @@ class FieldGen:
     def gen_model(self):
         j2_env = Environment(loader=FileSystemLoader('%s/generator_engine' % self.dir_path  ),trim_blocks=True)
         template = j2_env.get_template('models.j2')
-        rendered_file = template.render({ 'APP' : self.Form.get_form_name() , 'fields' : self.fields , 'models' : self.models })
+        rendered_file = template.render({ 'APP' : self.Form.get_form_name() , 'APP_NAME' : self.Form.Name , 'fields' : self.fields , 'models' : self.models })
         with open( '%s/tmp/%s/%s' % ( self.dir_path , self.Form.get_form_name() , 'models.py' )  , "w") as fh:
+                fh.write(rendered_file)
+
+    def gen_model_admin(self):
+        j2_env = Environment(loader=FileSystemLoader('%s/generator_engine' % self.dir_path  ),trim_blocks=True)
+        template = j2_env.get_template('admin.j2')
+        rendered_file = template.render({ 'APP' : self.Form.get_form_name() , 'APP_NAME' : self.Form.Name , 'fields' : self.fields , 'models' : self.models })
+        with open( '%s/tmp/%s/%s' % ( self.dir_path , self.Form.get_form_name() , 'admin.py' )  , "w") as fh:
                 fh.write(rendered_file)
 
     def create_app_dir(self):
         if not os.path.exists('%s/tmp/%s' % ( self.dir_path , self.Form.get_form_name() )):
             os.makedirs( '%s/tmp/%s' % ( self.dir_path , self.Form.get_form_name()))
         self.gen_model()
+        self.gen_model_admin()

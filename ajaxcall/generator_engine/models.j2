@@ -6,36 +6,44 @@ from django.utils.safestring import mark_safe
 from django.template.loader import get_template
 from django.core.validators import MaxValueValidator, MinValueValidator
 
-
 {% for model in models %}
+{% if not model.Choice.select %}
 class {{model.Name|upper}}(models.Model):
-{% if model.Choice %}
-{% if model.Choice.select %}
-  {{model.Choice.select|upper}}_CHOICE = ({% for choice in model.Choice.fields %}('{{choice.field}}','{{choice.verbose_name}}'){% if loop.last %}{% else %},{% endif %}{% endfor %})
-  {% for choice in model.Choice.fields %}{% if loop.first %}{{model.Choice.select|lower}} = models.CharField(max_length=255,choices={{model.Choice.select|upper}}_CHOICE,default='{{choice.field}}',)
-
-  def __str__(self):
-      return self.{{model.Name|lower}}
-
-  {% endif %}
-{% endfor %}
-{% else %}
 {% for choice in model.Choice %}
   {{ choice.field }}  = models.BooleanField(default=False,verbose_name='{{ choice.verbose_name }}')
 {% endfor %}
 
   def __str__(self):
     return '{% for choice in model.Choice %}( {{ choice.verbose_name }} : %s ){% endfor %}' % ( {% for choice in model.Choice %}self.{{ choice.field }}{% if loop.last %}{% else %},{% endif %}{% endfor %} )
-{% endif %}
-{% endif %}
 
+  class Meta:
+      verbose_name = '{% for choice in model.Choice %}{% if loop.last %}{{ choice.nice_name }}{% endif %}{% endfor %}'
+
+{% endif %}
 {% endfor %}
 
 class {{APP|upper}}APP(models.Model):
+  {{APP|lower}}_name = models.CharField(max_length=255,blank=True, null=True,default="",)
 {% for field in fields %}
   {{field.Name}} = {% if field.model.Type == 'number' %} models.IntegerField(default={{ field.model.Default }},validators=[MinValueValidator({{ field.model.Min }}), MaxValueValidator({{ field.model.Max }})]) {% endif %}
+{% endfor %}
 
-{% endfor %}
 {% for model in models %}
-  {{model.Name|lower}} = models.OneToOneField({{model.Name|upper}},on_delete=models.CASCADE)
+{% if model.Choice %}
+{% if model.Choice.select %}
+  {{model.Choice.select|upper}}_CHOICE = ({% for choice in model.Choice.fields %}('{{choice.field}}','{{choice.verbose_name}}'){% if loop.last %}{% else %},{% endif %}{% endfor %})
+  {% for choice in model.Choice.fields %}{% if loop.first %}{{model.Choice.select|lower}} = models.CharField(max_length=255,choices={{model.Choice.select|upper}}_CHOICE,default='{{choice.field}}',)
+{% endif %}
 {% endfor %}
+{% else %}
+  {{model.Name|lower}} = models.ForeignKey({{model.Name|upper}},null=True,on_delete=models.SET_NULL)
+{% endif %}
+{% endif %}
+{% endfor %}
+
+
+  def __str__(self):
+      return self.{{APP|lower}}_name
+
+  class Meta:
+      verbose_name = '{{APP_NAME|title}}'
