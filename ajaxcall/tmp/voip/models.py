@@ -7,13 +7,14 @@ from django.template.loader import get_template
 from django.core.validators import MaxValueValidator, MinValueValidator
 
 
-class VOIPAPP(models.Model):
+class VOIP_QUOTE(models.Model):
   voip_name = models.CharField(max_length=255,blank=True, null=True,default="",)
-  network_throughput =  models.IntegerField(default=1,validators=[MinValueValidator(1), MaxValueValidator(1000)]) 
+  number_of_phone_number =  models.IntegerField(default=1,validators=[MinValueValidator(1), MaxValueValidator(50)]) 
 
 
   def __str__(self):
       return self.voip_name
 
+
   class Meta:
-      verbose_name = 'Voip'
+      verbose_name = 'Voip QUOTE'

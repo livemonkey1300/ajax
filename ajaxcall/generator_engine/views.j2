@@ -1,0 +1,70 @@
+from django.shortcuts import render , redirect
+
+from .ctl import CTL
+
+
+
+#------- DOC -----------
+{% for model in Model %}
+{% if model.template %}
+{% for template in model.template %}
+#  {{model.Name|lower}}.get_{{template.Name}}
+{% endfor %}
+{% endif %}
+{% endfor %}
+
+
+
+
+def index(request):
+  controller = CTL()
+  context = {}
+{% for model in Model %}
+  context.update({ '{{model.Name|lower}}' : controller.get_{{model.Name}}() })
+{% endfor %}
+  return render(request, '{{APP}}/Main.html', context )
+
+
+{% for model in models %}
+{% if not model.Choice.select %}
+def add_{{model.Name|lower}}(request,id=0,iframe=0):
+    context =  {'APP': '{{model.Name}}' }
+    controller = CTL(id)
+    if id == 0:
+          context.update({'Form' : controller.get_{{model.Name}}Form() , 'submit' : '{{model.Name|lower}}' })
+    else:
+          context.update({'Status': 'Edit' , 'ID' : id })
+          context.update({'Form' : controller.init_{{model.Name}}Form_id(request) , 'submit' : '{{model.Name|lower}}' })
+    return render(request, '{{APP}}/add.html', context )
+
+{% endif %}
+{% endfor %}
+
+def submit_ctl(request,name,id=0):
+    controller = CTL(id)
+{% for model in models %}
+{% if not model.Choice.select %}
+    if name == '{{model.Name|lower}}':
+        if id != 0:
+            controller.init_{{model.Name}}Form_id(request)
+            return redirect('{{APP}}:index')
+        controller.init_AccountsForm(request)
+        return redirect('{{APP}}:index')
+{% endif %}
+{% endfor %}
+    return redirect('{{APP}}:index')
+
+
+{% for model in Model %}
+
+def add_{{model.Name|lower}}(request,id=0,iframe=0):
+    context =  {'APP': '{{model.Name}}' }
+    controller = CTL(id)
+    if id == 0:
+          context.update({'Form' : controller.get_{{model.Name}}Form() , 'submit' : '{{model.Name|lower}}' })
+    else:
+          context.update({'Status': 'Edit' , 'ID' : id })
+          context.update({'Form' : controller.init_{{model.Name}}Form_id(request) , 'submit' : '{{model.Name|lower}}' })
+    return render(request, '{{app}}/add.html', context )
+
+{% endfor %}

@@ -22,7 +22,7 @@ class {{model.Name|upper}}(models.Model):
 {% endif %}
 {% endfor %}
 
-class {{APP|upper}}APP(models.Model):
+class {{APP|upper}}_QUOTE(models.Model):
   {{APP|lower}}_name = models.CharField(max_length=255,blank=True, null=True,default="",)
 {% for field in fields %}
   {{field.Name}} = {% if field.model.Type == 'number' %} models.IntegerField(default={{ field.model.Default }},validators=[MinValueValidator({{ field.model.Min }}), MaxValueValidator({{ field.model.Max }})]) {% endif %}
@@ -45,5 +45,6 @@ class {{APP|upper}}APP(models.Model):
   def __str__(self):
       return self.{{APP|lower}}_name
 
+
   class Meta:
-      verbose_name = '{{APP_NAME|title}}'
+      verbose_name = '{{APP_NAME|title}} QUOTE'

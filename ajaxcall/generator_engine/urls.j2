@@ -1,0 +1,19 @@
+from django.urls import path
+from django.conf.urls import url
+
+from . import views
+
+app_name = '{{APP}}'
+urlpatterns = [
+    path('', views.index, name='index'),
+{% for model in models %}
+{% if not model.Choice.select %}
+    path('add_{{model.Name|lower}}', views.add_{{model.Name|lower}}, name='add_{{model.Name|lower}}'),
+    path('edit_{{model.Name|lower}}/<int:id>', views.add_{{model.Name|lower}}, name='edit_{{model.Name|lower}}'),
+{% endif %}
+{% endfor %}
+    path('add_{{APP|lower}}', views.add_{{APP|lower}}, name='add_{{APP|lower}}'),
+    path('edit_{{APP|lower}}/<int:id>', views.add_{{APP|lower}}, name='edit_{{APP|lower}}'),
+    path('<slug:name>/submit', views.submit_ctl, name='submitctl'),
+    path('<slug:name>/submit/<int:id>', views.submit_ctl, name='submitctl'),
+]

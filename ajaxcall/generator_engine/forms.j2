@@ -1,0 +1,20 @@
+from django import forms
+from django.forms import ModelForm
+from .models import {% for model in models %}{% if not model.Choice.select %}{{model.Name|upper}} , {% endif %}{% endfor %}{{APP|upper}}APP
+
+
+
+{% for model in models %}
+{% if not model.Choice.select %}
+class {{model.Name|upper}}Form(forms.ModelForm):
+  class Meta:
+      model = {{model.Name|upper}}
+      fields = ({% for choice in model.Choice %}'{{ choice.field }}'{% if loop.last %}{% else %},{% endif %}{% endfor %})
+
+{% endif %}
+{% endfor %}
+
+class {{APP|upper}}_QUOTE_Form(models.Model):
+  class Meta:
+    model = {{APP|upper}}APP
+    fields = ( '{{APP|lower}}_name' , {% for field in fields %}'{{field.Name}}'{% endfor %}{% for model in models %}{% if model.Choice %}{% if model.Choice.select %}{% for choice in model.Choice.fields %}{% if loop.first %}'{{model.Choice.select|lower}}',{% endif %}{% endfor %}{% else %}'{{model.Name|lower}}',{% endif %}{% endif %}{% endfor %})

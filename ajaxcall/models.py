@@ -106,7 +106,7 @@ class Model_Choices_Group(models.Model):
                     field = i.Value
                 else:
                     field = re.sub('^[0-9]+' , '' , i.Value.lower().replace(' ','').replace('+' , '').replace('-' , ''))
-                ch.append({ 'field' :  field , 'verbose_name' : i.Value ,  'nice_name' : nice_name  })
+                ch.append({ 'field' :  field , 'verbose_name' : i.Value ,  'nice_name' : nice_name , 'extra' : i  })
             if select:
                 cho['fields'] = ch
                 return cho
@@ -117,7 +117,7 @@ class Model_Choices_Group(models.Model):
                     field = i.Value
                 else:
                     field = re.sub('^[0-9]+' , '' , i.Value.lower().replace(' ','').replace('+' , '').replace('-' , ''))
-                ch.append({ 'field' : field , 'verbose_name' : i.Value ,  'nice_name' : nice_name })
+                ch.append({ 'field' : field , 'verbose_name' : i.Value ,  'nice_name' : nice_name  ,  'extra' : i })
             if select:
                 cho['fields'] = ch
                 return cho

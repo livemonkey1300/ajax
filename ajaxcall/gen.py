@@ -34,8 +34,33 @@ class FieldGen:
         with open( '%s/tmp/%s/%s' % ( self.dir_path , self.Form.get_form_name() , 'admin.py' )  , "w") as fh:
                 fh.write(rendered_file)
 
+    def gen_model_url(self):
+        j2_env = Environment(loader=FileSystemLoader('%s/generator_engine' % self.dir_path  ),trim_blocks=True)
+        template = j2_env.get_template('urls.j2')
+        rendered_file = template.render({ 'APP' : self.Form.get_form_name() , 'APP_NAME' : self.Form.Name , 'fields' : self.fields , 'models' : self.models })
+        with open( '%s/tmp/%s/%s' % ( self.dir_path , self.Form.get_form_name() , 'urls.py' )  , "w") as fh:
+                fh.write(rendered_file)
+
+    def gen_model_views(self):
+        j2_env = Environment(loader=FileSystemLoader('%s/generator_engine' % self.dir_path  ),trim_blocks=True)
+        template = j2_env.get_template('views.j2')
+        rendered_file = template.render({ 'APP' : self.Form.get_form_name() , 'APP_NAME' : self.Form.Name , 'fields' : self.fields , 'models' : self.models })
+        with open( '%s/tmp/%s/%s' % ( self.dir_path , self.Form.get_form_name() , 'views.py' )  , "w") as fh:
+                fh.write(rendered_file)
+
+    def gen_model_forms(self):
+        j2_env = Environment(loader=FileSystemLoader('%s/generator_engine' % self.dir_path  ),trim_blocks=True)
+        template = j2_env.get_template('forms.j2')
+        rendered_file = template.render({ 'APP' : self.Form.get_form_name() , 'APP_NAME' : self.Form.Name , 'fields' : self.fields , 'models' : self.models })
+        with open( '%s/tmp/%s/%s' % ( self.dir_path , self.Form.get_form_name() , 'forms.py' )  , "w") as fh:
+                fh.write(rendered_file)
+
+
     def create_app_dir(self):
         if not os.path.exists('%s/tmp/%s' % ( self.dir_path , self.Form.get_form_name() )):
             os.makedirs( '%s/tmp/%s' % ( self.dir_path , self.Form.get_form_name()))
         self.gen_model()
         self.gen_model_admin()
+        self.gen_model_url()
+        self.gen_model_views()
+        self.gen_model_forms()
