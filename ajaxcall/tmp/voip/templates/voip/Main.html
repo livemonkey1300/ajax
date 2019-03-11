@@ -1,0 +1,8 @@
+<ul>
+  <li><a href="{% url 'voip:create_voip_QUOTE' %}">New voip QUOTE </a></li>
+  <ul>
+     {% for i in voip.item %}
+    <li><a href="{% url 'voip:edit_voip_QUOTE' i.id %}  ">Edit {{ i }}</a></li>
+    {% endfor %}
+    </ul>
+    </ul>

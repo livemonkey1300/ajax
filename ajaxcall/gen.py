@@ -55,6 +55,37 @@ class FieldGen:
         with open( '%s/tmp/%s/%s' % ( self.dir_path , self.Form.get_form_name() , 'forms.py' )  , "w") as fh:
                 fh.write(rendered_file)
 
+    def gen_model_main(self):
+        j2_env = Environment(loader=FileSystemLoader('%s/generator_engine' % self.dir_path  ),trim_blocks=True)
+        template = j2_env.get_template('Main_HTML.j2')
+        rendered_file = template.render({ 'APP' : self.Form.get_form_name() , 'APP_NAME' : self.Form.Name , 'fields' : self.fields , 'models' : self.models })
+        return rendered_file
+
+    def gen_model_form_html(self):
+        j2_env = Environment(loader=FileSystemLoader('%s/generator_engine' % self.dir_path  ),trim_blocks=True)
+        template = j2_env.get_template('Form_HTML.j2')
+        rendered_file = template.render({ 'APP' : self.Form.get_form_name() , 'APP_NAME' : self.Form.Name , 'fields' : self.fields , 'models' : self.models })
+        return rendered_file
+
+    def gen_model_json(self):
+        j2_env = Environment(loader=FileSystemLoader('%s/generator_engine' % self.dir_path  ),trim_blocks=True)
+        template = j2_env.get_template('json_import.j2')
+        rendered_file = template.render({ 'APP' : self.Form.get_form_name() , 'APP_NAME' : self.Form.Name , 'fields' : self.fields , 'models' : self.models })
+        with open( '%s/tmp/%s/%s' % ( self.dir_path , self.Form.get_form_name() , 'json_import.py' )  , "w") as fh:
+                fh.write(rendered_file)
+
+    def gen_templates(self):
+        blank = ''
+        path1 = '%s/tmp/%s/%s' % ( self.dir_path , self.Form.get_form_name() , 'templates')
+        path2 = '%s/%s' % ( path1 ,  self.Form.get_form_name() )
+        if not os.path.exists(path1):
+            os.makedirs(path1)
+        if not os.path.exists(path2):
+            os.makedirs(path2)
+        with open('%s/%s' % ( path2 ,'Main.html') , "w") as fh:
+            fh.write(self.gen_model_main())
+        with open('%s/%s' % ( path2 ,'form.html') , "w") as fh:
+            fh.write(self.gen_model_form_html())
 
     def create_app_dir(self):
         if not os.path.exists('%s/tmp/%s' % ( self.dir_path , self.Form.get_form_name() )):
@@ -64,3 +95,5 @@ class FieldGen:
         self.gen_model_url()
         self.gen_model_views()
         self.gen_model_forms()
+        self.gen_templates()
+        self.gen_model_json()

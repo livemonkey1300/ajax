@@ -6,8 +6,8 @@ from . import views
 app_name = 'voip'
 urlpatterns = [
     path('', views.index, name='index'),
-    path('add_voip', views.add_voip, name='add_voip'),
-    path('edit_voip/<int:id>', views.add_voip, name='edit_voip'),
-    path('<slug:name>/submit', views.submit_ctl, name='submitctl'),
-    path('<slug:name>/submit/<int:id>', views.submit_ctl, name='submitctl'),
+    path('create_voip_QUOTE', views.create_voip_QUOTE, name='create_voip_QUOTE'),
+    path('edit_voip_QUOTE/<int:pk>', views.edit_voip_QUOTE, name='edit_voip_QUOTE'),
+    path('call', views.ajax_call, name='call'),
+    path('call/<slug:field>', views.ajax_call, name='call'),
 ]

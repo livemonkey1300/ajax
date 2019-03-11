@@ -1,24 +1,22 @@
 from django.shortcuts import render , redirect
+from django.shortcuts import get_object_or_404
 
-from .ctl import CTL
+from django.http import HttpResponse
+import json
 
-
-
-#------- DOC -----------
-{% for model in Model %}
-{% if model.template %}
-{% for template in model.template %}
-#  {{model.Name|lower}}.get_{{template.Name}}
-{% endfor %}
-{% endif %}
-{% endfor %}
-
-
+from .models import {% for model in models %}{% if not model.Choice.select %}{{model.Name|upper}} , {% endif %}{% endfor %}{{APP|upper}}_QUOTE
+from .forms import {% for model in models %}{% if not model.Choice.select %}{{model.Name|upper}}Form , {% endif %}{% endfor %}{{APP|upper}}_QUOTE_Form
+from .json_import import FORM
 
 
 def index(request):
-  controller = CTL()
   context = {}
+{% for model in models %}
+{% if not model.Choice.select %}
+  context.update({ '{{model.Name|lower}}' : { 'item' : {{model.Name|upper}}.objects.all() , 'edit' : 'edit_{{model.Name|lower}}' ,  'create' : 'create_{{model.Name|lower}}' }})
+{% endif %}
+{% endfor %}
+  context.update({ '{{APP|lower}}' : { 'item' : {{APP|upper}}_QUOTE.objects.all() , 'edit' : 'edit_{{APP|lower}}_QUOTE' ,  'create' : 'create_{{APP|lower}}_QUOTE' }})
 {% for model in Model %}
   context.update({ '{{model.Name|lower}}' : controller.get_{{model.Name}}() })
 {% endfor %}
@@ -27,44 +25,61 @@ def index(request):
 
 {% for model in models %}
 {% if not model.Choice.select %}
-def add_{{model.Name|lower}}(request,id=0,iframe=0):
-    context =  {'APP': '{{model.Name}}' }
-    controller = CTL(id)
-    if id == 0:
-          context.update({'Form' : controller.get_{{model.Name}}Form() , 'submit' : '{{model.Name|lower}}' })
+def create_{{model.Name|lower}}(request):
+    if request.method == 'POST':
+        form = {{model.Name|upper}}Form(request.POST)
+        if form.is_valid():
+          form.save()
+          return redirect('{{APP}}:index')
     else:
-          context.update({'Status': 'Edit' , 'ID' : id })
-          context.update({'Form' : controller.init_{{model.Name}}Form_id(request) , 'submit' : '{{model.Name|lower}}' })
-    return render(request, '{{APP}}/add.html', context )
+        form = {{model.Name|upper}}Form()
+    return render(request, '{{APP}}/form.html', {'form': form})
+
+
+def edit_{{model.Name|lower}}(request,pk):
+    {{model.Name|lower}}_instance = get_object_or_404({{model.Name|upper}}, pk=pk)
+    if request.method == 'POST':
+        form = {{model.Name|upper}}Form(request.POST,instance={{model.Name|lower}}_instance)
+        if form.is_valid():
+          form.save()
+          return redirect('{{APP}}:index')
+    else:
+        form = {{model.Name|upper}}Form(instance={{model.Name|lower}}_instance)
+    return render(request, '{{APP}}/form.html', {'form': form , 'item' : {{model.Name|lower}}_instance  })
+
 
 {% endif %}
 {% endfor %}
 
-def submit_ctl(request,name,id=0):
-    controller = CTL(id)
-{% for model in models %}
-{% if not model.Choice.select %}
-    if name == '{{model.Name|lower}}':
-        if id != 0:
-            controller.init_{{model.Name}}Form_id(request)
-            return redirect('{{APP}}:index')
-        controller.init_AccountsForm(request)
-        return redirect('{{APP}}:index')
-{% endif %}
-{% endfor %}
-    return redirect('{{APP}}:index')
-
-
-{% for model in Model %}
-
-def add_{{model.Name|lower}}(request,id=0,iframe=0):
-    context =  {'APP': '{{model.Name}}' }
-    controller = CTL(id)
-    if id == 0:
-          context.update({'Form' : controller.get_{{model.Name}}Form() , 'submit' : '{{model.Name|lower}}' })
+def create_{{APP|lower}}_QUOTE(request):
+    if request.method == 'POST':
+        form = {{APP|upper}}_QUOTE_Form(request.POST)
+        if form.is_valid():
+          form.save()
     else:
-          context.update({'Status': 'Edit' , 'ID' : id })
-          context.update({'Form' : controller.init_{{model.Name}}Form_id(request) , 'submit' : '{{model.Name|lower}}' })
-    return render(request, '{{app}}/add.html', context )
+        form = {{APP|upper}}_QUOTE_Form()
+    return render(request, '{{APP}}/form.html', {'form': form})
 
-{% endfor %}
+def edit_{{APP|lower}}_QUOTE(request,pk):
+    {{APP|lower}}_instance = get_object_or_404({{APP|upper}}_QUOTE, pk=pk)
+    if request.method == 'POST':
+        form = {{APP|upper}}_QUOTE_Form(request.POST,instance={{APP|lower}}_instance)
+        if form.is_valid():
+          form.save()
+          return redirect('{{APP}}:index')
+    else:
+        form = {{APP|upper}}_QUOTE_Form(instance={{APP|lower}}_instance)
+    return render(request, '{{APP}}/form.html', {'form': form})
+
+
+def ajax_call(request,field=False):
+    if request.method == 'POST' and field:
+      request.session.modified = True
+      try :
+        request.session[field]['price'] = 0
+        request.session[field]['value'] = request.POST.get(field)
+      except KeyError:
+          request.session[field] = {}
+          request.session[field]['price'] = 0
+          request.session[field]['value'] = request.POST.get(field)
+    return HttpResponse(json.dumps({ 'success' : True , 'field' : request.session[field]['value'] }), content_type="application/json")

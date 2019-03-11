@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import APPLICATIONS , FULLY_MANAGED , VIRTUAL_MACHINEAPP
+from .models import APPLICATIONS , FULLY_MANAGED , VIRTUAL_MACHINE_QUOTE
 
 class APPLICATIONS_Inline(admin.TabularInline):
   model = APPLICATIONS
@@ -16,4 +16,4 @@ class VIRTUAL_MACHINEAPPAdmin(admin.ModelAdmin):
 
 admin.site.register(APPLICATIONS)
 admin.site.register(FULLY_MANAGED)
-admin.site.register(VIRTUAL_MACHINEAPP,VIRTUAL_MACHINEAPPAdmin)
+admin.site.register(VIRTUAL_MACHINE_QUOTE,VIRTUAL_MACHINEAPPAdmin)

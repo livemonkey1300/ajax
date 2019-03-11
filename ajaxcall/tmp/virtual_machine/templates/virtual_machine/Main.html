@@ -1,0 +1,20 @@
+<ul>
+  <li><a href="{% url 'virtual_machine:create_applications' %}">New applications</a></li>
+  <ul>
+     {% for i in applications.item %}
+    <li><a href="{% url 'virtual_machine:edit_applications' %} i.id ">Edit {{ i }}</a></li>
+    {% endfor %}
+    </ul>
+      <li><a href="{% url 'virtual_machine:create_fully_managed' %}">New fully_managed</a></li>
+  <ul>
+     {% for i in fully_managed.item %}
+    <li><a href="{% url 'virtual_machine:edit_fully_managed' %} i.id ">Edit {{ i }}</a></li>
+    {% endfor %}
+    </ul>
+      <li><a href="{% url 'virtual_machine:create_virtual_machine_QUOTE' %}">New virtual_machine QUOTE </a></li>
+  <ul>
+     {% for i in virtual_machine.item %}
+    <li><a href="{% url 'virtual_machine:edit_virtual_machine_QUOTE' i.id %}  ">Edit {{ i }}</a></li>
+    {% endfor %}
+    </ul>
+    </ul>

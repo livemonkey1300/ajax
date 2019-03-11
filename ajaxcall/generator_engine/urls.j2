@@ -8,12 +8,12 @@ urlpatterns = [
     path('', views.index, name='index'),
 {% for model in models %}
 {% if not model.Choice.select %}
-    path('add_{{model.Name|lower}}', views.add_{{model.Name|lower}}, name='add_{{model.Name|lower}}'),
-    path('edit_{{model.Name|lower}}/<int:id>', views.add_{{model.Name|lower}}, name='edit_{{model.Name|lower}}'),
+    path('create_{{model.Name|lower}}', views.create_{{model.Name|lower}}, name='create_{{model.Name|lower}}'),
+    path('edit_{{model.Name|lower}}/<int:pk>', views.edit_{{model.Name|lower}}, name='edit_{{model.Name|lower}}'),
 {% endif %}
 {% endfor %}
-    path('add_{{APP|lower}}', views.add_{{APP|lower}}, name='add_{{APP|lower}}'),
-    path('edit_{{APP|lower}}/<int:id>', views.add_{{APP|lower}}, name='edit_{{APP|lower}}'),
-    path('<slug:name>/submit', views.submit_ctl, name='submitctl'),
-    path('<slug:name>/submit/<int:id>', views.submit_ctl, name='submitctl'),
+    path('create_{{APP|lower}}_QUOTE', views.create_{{APP|lower}}_QUOTE, name='create_{{APP|lower}}_QUOTE'),
+    path('edit_{{APP|lower}}_QUOTE/<int:pk>', views.edit_{{APP|lower}}_QUOTE, name='edit_{{APP|lower}}_QUOTE'),
+    path('call', views.ajax_call, name='call'),
+    path('call/<slug:field>', views.ajax_call, name='call'),
 ]

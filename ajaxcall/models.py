@@ -124,7 +124,7 @@ class Model_Choices_Group(models.Model):
             return ch
         return []
 
-    def get_field(self,request=False,session=False,model_name=False):
+    def get_field(self,request=False,session=False,model_name=False,form_name=False):
         value = ''
         print('Inside Get Field' , self.get_field_name())
         sub = False
@@ -143,16 +143,21 @@ class Model_Choices_Group(models.Model):
             request.session['lookup_table'] = { model_name : {} }
          if not session['price'] > float(0):
              session['price'] = float(0)
+         sub_choices = []
          for i in self.choices_price.all():
-            sub_choices = []
             request.session['lookup_table'][model_name].update( { i.id : i.price } )
             if len(i.sub_choices.all()) > 0:
-                request.session['lookup_table']['sub_%s' % model_name][i.id] = []
+                request.session[form_name]['sub_%s' % model_name] = {'value': '', 'price': 0.0, 'total': 0}
+                try:
+                    request.session['lookup_table']['sub_%s' % model_name][i.id] = []
+                except KeyError:
+                    request.session['lookup_table']['sub_%s' % model_name] = {}
+                    request.session['lookup_table']['sub_%s' % model_name][i.id] = []
                 for z in i.sub_choices.all():
                     request.session['lookup_table']['sub_%s' % model_name][i.id].append( { z.id : z.Value } )
                     sub_choices.append(z)
                 print(sub_choices)
-                sub = { 'data' : sub_choices , 'name' : 'sub_%s' % model_name , 'value' : 0 , 'template' : 'ajaxcall/%s.html' % self.template }
+         sub = { 'data' : sub_choices , 'name' : 'sub_%s' % model_name , 'value' : 0 , 'template' : 'ajaxcall/%s.html' % self.template }
          val = []
          for i in value:
              val.append(int(i))
@@ -221,7 +226,7 @@ class Model_Inputs(models.Model):
 
     def valid_model_type(self):
         if self.number:
-            return { 'Type' : 'number' , 'field' : True , 'Min' : self.number.min , 'Max' : self.number.max , 'Default' : self.number.default }
+            return { 'Type' : 'number' , 'field' : True , 'Min' : self.number.min , 'Max' : self.number.max , 'Default' : self.number.default , 'price' : self.number.price }
         if self.regular:
             return { 'Type' : 'regular' , 'field' : False }
 
@@ -253,9 +258,13 @@ class Model_Inputs(models.Model):
                 context.update( self.choices.get_field(request,session,self.get_model_name()))
             except KeyError:
                 print('Failed')
-                request.session[Form_Name][self.get_model_name()] = { 'value' : '' , 'price' : 0 , 'total' : 0 }
+                try:
+                    request.session[Form_Name].update({ self.get_model_name() : { 'value' : '' , 'price' : 0 , 'total' : 0 } })
+                except KeyError:
+                    request.session[Form_Name] = {}
+                    request.session[Form_Name].update({ self.get_model_name() : { 'value' : '' , 'price' : 0 , 'total' : 0 } })
                 session = request.session[Form_Name][self.get_model_name()]
-                context.update( self.choices.get_field(request,session,self.get_model_name()))
+                context.update( self.choices.get_field(request,session,self.get_model_name(),Form_Name))
             return  mark_safe(render_to_string(context['template'] , context ))
 
     class Meta:

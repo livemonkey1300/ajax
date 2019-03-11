@@ -15,7 +15,7 @@ class FULLY_MANAGEDForm(forms.ModelForm):
       fields = ('businesshoursmfest','monsunest')
 
 
-class VIRTUAL_MACHINE_QUOTE_Form(models.Model):
+class VIRTUAL_MACHINE_QUOTE_Form(forms.ModelForm):
   class Meta:
     model = VIRTUAL_MACHINE_QUOTE
     fields = ( 'virtual_machine_name' , 'network_throughput','datacenter','operating_system','system_disk','data_disk','memory','vcpu','applications','fully_managed',)

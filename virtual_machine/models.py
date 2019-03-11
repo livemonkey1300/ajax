@@ -32,10 +32,10 @@ class FULLY_MANAGED(models.Model):
       verbose_name = 'Fully Managed'
 
 
-class VIRTUAL_MACHINEAPP(models.Model):
+class VIRTUAL_MACHINE_QUOTE(models.Model):
   virtual_machine_name = models.CharField(max_length=255,blank=True, null=True,default="",)
   network_throughput =  models.IntegerField(default=1,validators=[MinValueValidator(1), MaxValueValidator(1000)])
-  DATACENTER_CHOICE = (('Canada/Eastern','Canada/Eastern'),('Vancouver, BC','Vancouver, BC'),('Los Angeles, CA','Los Angeles, CA'),('Brasilia, Brasil','Brasilia, Brasil'),('Ottawa, ON','Ottawa, ON'),('Miami, FL','Miami, FL'),('Paris, France','Paris, France'),('Mexico City, MX','Mexico City, MX'))
+  DATACENTER_CHOICE = (('Canada/Eastern','Canada/Eastern'),('Vancouver, BC','Vancouver, BC'),('Los Angeles, CA','Los Angeles, CA'),('Brasilia, Brasil','Brasilia, Brasil'),('Ottawa, ON','Ottawa, ON'),('Miami, FL','Miami, FL'),('Paris, France','Paris, France'),('Mexico City, MX','Mexico City, MX'),('Miami 3','Miami 3'))
   datacenter = models.CharField(max_length=255,choices=DATACENTER_CHOICE,default='Canada/Eastern',)
   OPERATING_SYSTEM_CHOICE = (('CentOS','CentOS'),('Windows Server','Windows Server'),('Ubuntu','Ubuntu'),('Debian','Debian'),('SUSE Linux','SUSE Linux'),('OpenSUSE','OpenSUSE'),('sense','sense'))
   operating_system = models.CharField(max_length=255,choices=OPERATING_SYSTEM_CHOICE,default='CentOS',)
@@ -47,12 +47,13 @@ class VIRTUAL_MACHINEAPP(models.Model):
   memory = models.CharField(max_length=255,choices=MEMORY_CHOICE,default='2 GB',)
   VCPU_CHOICE = (('2 GB','2 GB'),('90 GB','90 GB'))
   vcpu = models.CharField(max_length=255,choices=VCPU_CHOICE,default='2 GB',)
-  applications = models.ForeignKey(APPLICATIONS,on_delete=models.CASCADE)
-  fully_managed = models.ForeignKey(FULLY_MANAGED,on_delete=models.CASCADE)
+  applications = models.ForeignKey(APPLICATIONS,null=True,on_delete=models.SET_NULL)
+  fully_managed = models.ForeignKey(FULLY_MANAGED,null=True,on_delete=models.SET_NULL)
 
 
   def __str__(self):
       return self.virtual_machine_name
 
+
   class Meta:
-      verbose_name = 'Virtual Machine'
+      verbose_name = 'Virtual Machine QUOTE'

@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import {% for model in models %}{% if not model.Choice.select %}{{model.Name|upper}} , {% endif %}{% endfor %}{{APP|upper}}APP
+from .models import {% for model in models %}{% if not model.Choice.select %}{{model.Name|upper}} , {% endif %}{% endfor %}{{APP|upper}}_QUOTE
 
 {% for model in models %}
 {% if not model.Choice.select %}
@@ -20,4 +20,4 @@ class {{APP|upper}}APPAdmin(admin.ModelAdmin):
 admin.site.register({{model.Name|upper}})
 {% endif %}
 {% endfor %}
-admin.site.register({{APP|upper}}APP,{{APP|upper}}APPAdmin)
+admin.site.register({{APP|upper}}_QUOTE,{{APP|upper}}APPAdmin)

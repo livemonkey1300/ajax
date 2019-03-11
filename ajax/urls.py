@@ -21,4 +21,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     url(r'',  include('Home.urls') ),
     url(r'ajax/',  include('ajaxcall.urls') ),
+    url(r'virtual_machine/',  include('virtual_machine.urls') ),
 ]
