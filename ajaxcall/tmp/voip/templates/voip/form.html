@@ -6,7 +6,7 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 </head>
 <body>
-  <div class="container">
+  <div class="container" ng-app="App" ng-controller="AppController" >
 
 <form method="post">
   {% csrf_token %}
@@ -37,7 +37,7 @@
            }else{
              cdata[$( this ).attr( "name") ] = $(this).val()
             }
-            $.post( url + $( this ).attr( "name" )  , cdata ).done(function( data ) {
+            $.post( url + '/' + $( this ).attr( "name" )  , cdata ).done(function( data ) {
               console.log(data)
             });
           });

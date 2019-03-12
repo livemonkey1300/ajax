@@ -1,0 +1,8 @@
+<ul>
+  <li><a href="{% url 'exchange:create_exchange_QUOTE' %}">New exchange QUOTE </a></li>
+  <ul>
+     {% for i in exchange.item %}
+    <li><a href="{% url 'exchange:edit_exchange_QUOTE' i.id %}  ">Edit {{ i }}</a></li>
+    {% endfor %}
+    </ul>
+    </ul>

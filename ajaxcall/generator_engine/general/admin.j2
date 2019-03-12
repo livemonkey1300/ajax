@@ -1,0 +1,11 @@
+from django.contrib import admin
+
+# Register your models here.
+from .models import {% for key, value in APPS.items() %} {{key|upper}} {% if loop.last %}{% else %},{% endif %} {% endfor %}
+
+
+
+
+{% for key, value in APPS.items() %}
+admin.site.register({{key|upper}})
+{% endfor %}

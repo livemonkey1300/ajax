@@ -8,7 +8,7 @@
 <body>
   <div class="container" ng-app="App" ng-controller="AppController" >
 
-<form method="post">
+<form method="post" action="{{ pk }}">
   {% csrf_token %}
   <table>{{ form.as_table }}</table>
   <button type="submit">submit</button>
@@ -37,6 +37,9 @@
            }else{
              cdata[$( this ).attr( "name") ] = $(this).val()
             }
+            if($( this ).attr( "type" ) == 'submit'){
+               $.post( {% if pk %}"{{ pk }}"{% endif %}  , $('form').serialize() ).done(function( data ) {
+            })}
             $.post( url  + '/' + $( this ).attr( "name" )  , cdata ).done(function( data ) {
               console.log(data)
             });

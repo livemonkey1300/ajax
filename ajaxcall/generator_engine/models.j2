@@ -6,6 +6,13 @@ from django.utils.safestring import mark_safe
 from django.template.loader import get_template
 from django.core.validators import MaxValueValidator, MinValueValidator
 
+{% for key , val in APPS %}
+{{ key }}
+
+{{ val }}
+
+{% endfor %}
+
 {% for model in models %}
 {% if not model.Choice.select %}
 class {{model.Name|upper}}(models.Model):
@@ -25,7 +32,9 @@ class {{model.Name|upper}}(models.Model):
 class {{APP|upper}}_QUOTE(models.Model):
   {{APP|lower}}_name = models.CharField(max_length=255,blank=True, null=True,default="",)
 {% for field in fields %}
-  {{field.Name}} = {% if field.model.Type == 'number' %} models.IntegerField(default={{ field.model.Default }},validators=[MinValueValidator({{ field.model.Min }}), MaxValueValidator({{ field.model.Max }})]) {% endif %}
+{% if field.model.Type == 'number' %}  {{field.Name}} = models.IntegerField(default={{ field.model.Default }},validators=[MinValueValidator({{ field.model.Min }}), MaxValueValidator({{ field.model.Max }})]) {% endif %}
+{% if field.model.Type == 'regular' %}  {{field.Name}} = {{ field.model.mod }} {% endif %}
+
 {% endfor %}
 
 {% for model in models %}
@@ -36,7 +45,9 @@ class {{APP|upper}}_QUOTE(models.Model):
 {% endif %}
 {% endfor %}
 {% else %}
-  {{model.Name|lower}} = models.ForeignKey({{model.Name|upper}},null=True,on_delete=models.SET_NULL)
+{% for choice in model.Choice %}
+  {{ choice.field }}  = models.BooleanField(default=False,verbose_name='{{ choice.verbose_name }}')
+{% endfor %}
 {% endif %}
 {% endif %}
 {% endfor %}

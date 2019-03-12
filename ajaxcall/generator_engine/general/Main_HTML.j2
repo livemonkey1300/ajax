@@ -1,0 +1,20 @@
+<ul>
+{% for model in models %}
+{% if not model.Choice.select %}
+  <li><a href="{% raw %}{% url '{% endraw %}{{APP}}:create_{{model.Name|lower}}'{% raw %} %}{% endraw %}">New {{model.Name|lower}}</a></li>
+  <ul>
+    {% raw %} {% for i in {% endraw %}{{model.Name|lower}}{% raw %}.item %}
+    <li><a href="{% url '{% endraw %}{{APP}}:edit_{{model.Name|lower}}'{% raw %} %} i.id ">Edit {{ i }}</a></li>
+    {% endfor %}
+    </ul>
+    {% endraw %}
+{% endif %}
+{% endfor %}
+  <li><a href="{% raw %}{% url '{% endraw %}{{APP}}:create_{{APP|lower}}_QUOTE'{% raw %} %}{% endraw %}">New {{APP|lower}} QUOTE </a></li>
+  <ul>
+    {% raw %} {% for i in {% endraw %}{{APP|lower}}{% raw %}.item %}
+    <li><a href="{% url '{% endraw %}{{APP}}:edit_{{APP|lower}}_QUOTE'{% raw %} i.id %}  ">Edit {{ i }}</a></li>
+    {% endfor %}
+    </ul>
+    {% endraw %}
+</ul>

@@ -1,0 +1,8 @@
+<ul>
+  <li><a href="{% url 'General:create_general_QUOTE' %}">New general QUOTE </a></li>
+  <ul>
+     {% for i in general.item %}
+    <li><a href="{% url 'General:edit_general_QUOTE' i.id %}  ">Edit {{ i }}</a></li>
+    {% endfor %}
+    </ul>
+    </ul>

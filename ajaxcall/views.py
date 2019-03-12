@@ -60,10 +60,14 @@ def init_types(request):
     with open("./ajaxcall/fields.txt", "r") as ins:
         array = []
         for line in ins:
+            nline = line.strip().split(":")
             try:
-                mod = Model_Types.objects.get(Name=line.strip())
+                mod = Model_Types.objects.get(Name=nline[0])
+                mod.register = nline[1]
+                mod.save()
             except Model_Types.DoesNotExist:
                 mod = Model_Types()
-                mod.Name = line.strip()
+                mod.Name = nline[0]
+                mod.register = nline[1]
                 mod.save()
     return redirect('Home:index')

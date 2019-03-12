@@ -10,6 +10,7 @@ import re
 
 class Model_Types(models.Model):
     Name = models.CharField(max_length=255,unique=True)
+    register = models.CharField(max_length=255,default="")
     def __str__(self):
         return self.Name
 
@@ -187,7 +188,7 @@ class Model_Regular(models.Model):
         value = self.value
         if len(session['value'].strip()) > 0 :
             value = session['value']
-        return { 'data' :  self , 'name' : model_name , 'value' : value , 'template' : 'ajaxcall/Fields.html' }
+        return { 'data' :  self , 'name' : model_name , 'value' : value , 'template' : 'ajaxcall/Fields.html' , 'special' :self }
         # return  mark_safe(render_to_string('ajaxcall/Fields.html' , context ))
 
 class Model_Inputs(models.Model):
@@ -228,7 +229,7 @@ class Model_Inputs(models.Model):
         if self.number:
             return { 'Type' : 'number' , 'field' : True , 'Min' : self.number.min , 'Max' : self.number.max , 'Default' : self.number.default , 'price' : self.number.price }
         if self.regular:
-            return { 'Type' : 'regular' , 'field' : False }
+            return { 'Type' : 'regular' , 'field' : True , 'mod' : self.regular.type.register }
 
     def get_field(self,request=False,Form_Name=''):
         context = { 'Form_Name' : Form_Name }
@@ -271,11 +272,10 @@ class Model_Inputs(models.Model):
         verbose_name = 'All Fields'
         ordering = ['priority']
 
-
-
-class AjaxForm(models.Model):
-    Name = models.CharField(max_length=255)
+class AjaxForm_SUB(models.Model):
+    Name = models.CharField(max_length=255,default="",)
     Field = models.ManyToManyField(Model_Inputs)
+    expend_text = models.CharField(max_length=255,default="",)
 
     def get_form_name(self):
         return self.Name.lower().replace(' ','_')
@@ -285,6 +285,54 @@ class AjaxForm(models.Model):
         fgen.get_dict()
         fgen.create_app_dir()
         print(self.Name.lower().replace(' ','_'))
+
+    def __str__(self):
+        return self.Name
+
+    def get_fields(self,request):
+        fields = []
+        form_name = self.get_form_name()
+        for i in self.Field.all():
+            try:
+                fields.append(i.get_field(request,form_name))
+                print('Workds')
+            except AttributeError:
+                pass
+        return fields
+
+    def get_form(self,request):
+        request.session.modified = True
+        try:
+            session = request.session[self.get_form_name()]
+        except KeyError:
+            request.session[self.get_form_name()] = {}
+            request.session[self.get_form_name()]['price_table'] = {}
+        context = { 'form_nice_name': self.Name , 'form_name': self.get_form_name() , 'Fields' : self.get_fields(request) }
+        return  mark_safe(render_to_string('ajaxcall/Master.html' , context ))
+
+    def get_form_js(self,request):
+        context = { 'form_nice_name': self.Name , 'form_name': self.get_form_name() , 'Fields' : self.get_fields(request) }
+        return  mark_safe(render_to_string('ajaxcall/Master_JS.html' , context ))
+
+    class Meta:
+        verbose_name = 'Form Sub'
+
+class AjaxForm(models.Model):
+    Name = models.CharField(max_length=255)
+    Field = models.ManyToManyField(Model_Inputs)
+    SubForm = models.ManyToManyField(AjaxForm_SUB)
+
+    def get_form_name(self):
+        return self.Name.lower().replace(' ','_')
+
+    def get_form_name_print(self):
+        fgen = FieldGen(self)
+        fgen.get_dict()
+        fgen.create_app_dir()
+        print(self.Name.lower().replace(' ','_'))
+
+    def get_FieldGen(self):
+        return FieldGen(self)
 
     def __str__(self):
         return self.Name
