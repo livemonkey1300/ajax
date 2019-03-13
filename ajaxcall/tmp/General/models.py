@@ -5,10 +5,11 @@ from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from django.template.loader import get_template
 from django.core.validators import MaxValueValidator, MinValueValidator
-
+from django.contrib.auth.models import User
 
 
 class EXCHANGE(models.Model):
+  user = models.ForeignKey(User,default=1,on_delete=models.CASCADE)
   exchange_name = models.CharField(max_length=255,blank=True, null=True,default="",)
   business_name = models.CharField(max_length=255,default='') 
   mailbox = models.IntegerField(default=1,validators=[MinValueValidator(1), MaxValueValidator(1000)]) 
@@ -17,7 +18,7 @@ class EXCHANGE(models.Model):
   number_of_employees = models.IntegerField(default=1,validators=[MinValueValidator(1), MaxValueValidator(2000)]) 
   BUSINESS_TYPE_CHOICE = (('Technology','Technology'),('Education','Education'),('Hospitality','Hospitality'),('Corporate','Corporate'),('Healthcare','Healthcare'),('Automotive','Automotive'),('Manufacturing','Manufacturing'))
   business_type = models.CharField(max_length=255,choices=BUSINESS_TYPE_CHOICE,default='Technology',)
-  AVERAGE_SIZE_OF_MAILBOX_CHOICE = (('5 GB','5 GB'),('10 GB','10 GB'),('25 GB','25 GB'),('50 GB','50 GB'))
+  AVERAGE_SIZE_OF_MAILBOX_CHOICE = (('5 GB','5 GB'),('10 GB','10 GB'),('25 GB','25 GB'),('50 GB','50 GB'),('75 GB','75 GB'))
   average_size_of_mailbox = models.CharField(max_length=255,choices=AVERAGE_SIZE_OF_MAILBOX_CHOICE,default='5 GB',)
   MIGRATION_REQUIRED_CHOICE = (('Yes','Yes'),('No','No'))
   migration_required = models.CharField(max_length=255,choices=MIGRATION_REQUIRED_CHOICE,default='Yes',)
@@ -26,12 +27,16 @@ class EXCHANGE(models.Model):
   def __str__(self):
       return self.exchange_name
 
+  def get_display(self):
+    content = { 'data' : self }
+    return mark_safe(render_to_string('General/exchange.html' , content ))
 
   class Meta:
       verbose_name = 'Exchange'
 
 
 class VOIP(models.Model):
+  user = models.ForeignKey(User,default=1,on_delete=models.CASCADE)
   voip_name = models.CharField(max_length=255,blank=True, null=True,default="",)
   business_name = models.CharField(max_length=255,default='') 
   extension = models.IntegerField(default=1,validators=[MinValueValidator(1), MaxValueValidator(1000)]) 
@@ -50,12 +55,16 @@ class VOIP(models.Model):
   def __str__(self):
       return self.voip_name
 
+  def get_display(self):
+    content = { 'data' : self }
+    return mark_safe(render_to_string('General/voip.html' , content ))
 
   class Meta:
       verbose_name = 'Voip'
 
 
 class VIRTUAL_MACHINE(models.Model):
+  user = models.ForeignKey(User,default=1,on_delete=models.CASCADE)
   virtual_machine_name = models.CharField(max_length=255,blank=True, null=True,default="",)
   network_throughput = models.IntegerField(default=1,validators=[MinValueValidator(1), MaxValueValidator(1000)]) 
   DATACENTER_CHOICE = (('Canada/Eastern','Canada/Eastern'),('Vancouver, BC','Vancouver, BC'),('Los Angeles, CA','Los Angeles, CA'),('Brasilia, Brasil','Brasilia, Brasil'),('Ottawa, ON','Ottawa, ON'),('Miami, FL','Miami, FL'),('Paris, France','Paris, France'),('Mexico City, MX','Mexico City, MX'))
@@ -83,6 +92,9 @@ class VIRTUAL_MACHINE(models.Model):
   def __str__(self):
       return self.virtual_machine_name
 
+  def get_display(self):
+    content = { 'data' : self }
+    return mark_safe(render_to_string('General/virtual_machine.html' , content ))
 
   class Meta:
       verbose_name = 'Virtual_machine'

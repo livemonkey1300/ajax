@@ -7,6 +7,7 @@ class FieldGen:
         self.dir_path = os.path.dirname(os.path.realpath(__file__))
         self.fields = []
         self.models = []
+        self.user_map = self.Form.user_map
         self.get_field()
 
     def get_dict(self):
@@ -18,7 +19,7 @@ class FieldGen:
             if i.valid_model():
                 self.fields.append({ 'Name' : i.get_model_name() , 'model' : i.valid_model_type() })
             else:
-                self.models.append({ 'Name' : i.get_model_name() , 'Choice' : i.valid_model_entery() })
+                self.models.append({ 'Name' : i.get_model_name() , 'Choice' : i.valid_model_entery() , 'verbose_name' : i.Name ,  'nice_name' : i.Name  })
 
     def gen_model(self):
         j2_env = Environment(loader=FileSystemLoader('%s/generator_engine' % self.dir_path  ),trim_blocks=True)
@@ -110,7 +111,7 @@ class FieldGen_ALL:
 
     def init_Forms(self):
         for i in self.Form :
-            self.Forms[i.Form.get_form_name()] = { 'models' : i.models , 'fields' :  i.fields }
+            self.Forms[i.Form.get_form_name()] = { 'models' : i.models , 'fields' :  i.fields , 'user_map' : i.user_map }
         print(self.Forms)
 
     def create(self):
@@ -127,6 +128,7 @@ class FieldGen_ALL:
         self.gen_model_forms()
         self.gen_templates()
         self.gen_model_json()
+        self.get_rendered_template()
 
     def gen_model(self):
         j2_env = Environment(loader=FileSystemLoader('%s/generator_engine' % self.dir_path  ),trim_blocks=True)
@@ -180,6 +182,16 @@ class FieldGen_ALL:
         template = j2_env.get_template('general/json_import.j2')
         rendered_file = template.render({ 'APP' : self.name , 'APPS' :self.Forms  })
         with open( '%s/tmp/%s/%s' % ( self.dir_path , self.name , 'json_import.py' )  , "w") as fh:
+                fh.write(rendered_file)
+
+    def get_rendered_template(self):
+        j2_env = Environment(loader=FileSystemLoader('%s/generator_engine' % self.dir_path  ),trim_blocks=True)
+        template = j2_env.get_template('general/model_html_template.j2')
+        path1 = '%s/tmp/%s/%s' % ( self.dir_path , self.name , 'templates')
+        path2 = '%s/%s' % ( path1 ,  self.name )
+        for key , value in self.Forms.items():
+            rendered_file = template.render({ 'values' : value , 'APP' : key })
+            with open('%s/%s' % ( path2 ,'%s.html' % key ) , "w") as fh:
                 fh.write(rendered_file)
 
     def gen_templates(self):

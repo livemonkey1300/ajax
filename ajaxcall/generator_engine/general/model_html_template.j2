@@ -1,0 +1,27 @@
+<div class="card">
+  <h5 class="card-header">{{ APP|title }} {% raw %} {{data.{% endraw %}{{APP}}_name{% raw %}}}{% endraw%} </h5>
+  <div class="card-body">
+    <p class="card-text">
+    {% for key, value in values.items() %}
+    {% if key == 'fields' %}
+    {% for i in value %}
+    <p>{{i.model.nice_name}} : {% raw %} {{data.{% endraw %}{{i.Name}}{% raw %}}}{% endraw%}</p>
+    {% endfor %}
+    {% endif %}
+    {% if key == 'models' %}
+    {{ value.nice_name}}
+    {% if value.Choice %}
+    {% for i in value.Choice.fields %}
+    <p>{{i.model.nice_name}} : {% raw %} {{data.{% endraw %}{{i.Name}}{% raw %}}}{% endraw%}</p>
+    {% endfor %}
+    {% else %}
+    {% for i in value %}
+    <p>{{ i.nice_name}}  : {% raw %} {{data.{% endraw %}{{i.Name}}{% raw %}}}{% endraw%}</p>
+    {% endfor %}
+    {% endif %}
+    {% endif %}
+    {% endfor %}
+    </p>
+    <a href="#" class="btn btn-primary">Go somewhere</a>
+  </div>
+</div>

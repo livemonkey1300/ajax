@@ -5,6 +5,7 @@ from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from django.template.loader import get_template
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.contrib.auth.models import User
 
 
 

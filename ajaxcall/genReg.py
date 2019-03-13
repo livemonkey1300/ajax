@@ -22,54 +22,54 @@ class FieldGen_ALL:
 
     def gen_model(self):
         j2_env = Environment(loader=FileSystemLoader('%s/generator_engine' % self.dir_path  ),trim_blocks=True)
-        template = j2_env.get_template('general/')')
+        template = j2_env.get_template('general/models.j2')
         rendered_file = template.render({ 'APP' : self.name , 'APPS' :self.Forms  })
         with open( '%s/tmp/%s/%s' % ( self.dir_path , self.name , 'models.py' )  , "w") as fh:
                 fh.write(rendered_file)
 
     def gen_model_admin(self):
         j2_env = Environment(loader=FileSystemLoader('%s/generator_engine' % self.dir_path  ),trim_blocks=True)
-        template = j2_env.get_template('general/')')
+        template = j2_env.get_template('general/admin.j2')
         rendered_file = template.render({ 'APP' : self.name , 'APPS' :self.Forms  })
         with open( '%s/tmp/%s/%s' % ( self.dir_path , self.name , 'admin.py' )  , "w") as fh:
                 fh.write(rendered_file)
 
     def gen_model_url(self):
         j2_env = Environment(loader=FileSystemLoader('%s/generator_engine' % self.dir_path  ),trim_blocks=True)
-        template = j2_env.get_template('general/')')
+        template = j2_env.get_template('general/urls.j2')
         rendered_file = template.render({ 'APP' : self.name , 'APPS' :self.Forms  })
         with open( '%s/tmp/%s/%s' % ( self.dir_path , self.name , 'urls.py' )  , "w") as fh:
                 fh.write(rendered_file)
 
     def gen_model_views(self):
         j2_env = Environment(loader=FileSystemLoader('%s/generator_engine' % self.dir_path  ),trim_blocks=True)
-        template = j2_env.get_template('general/')')
+        template = j2_env.get_template('general/views.j2')
         rendered_file = template.render({ 'APP' : self.name , 'APPS' :self.Forms  })
         with open( '%s/tmp/%s/%s' % ( self.dir_path , self.name , 'views.py' )  , "w") as fh:
                 fh.write(rendered_file)
 
     def gen_model_forms(self):
         j2_env = Environment(loader=FileSystemLoader('%s/generator_engine' % self.dir_path  ),trim_blocks=True)
-        template = j2_env.get_template('general/')')
+        template = j2_env.get_template('general/forms.j2')
         rendered_file = template.render({ 'APP' : self.name , 'APPS' :self.Forms  })
         with open( '%s/tmp/%s/%s' % ( self.dir_path , self.name , 'forms.py' )  , "w") as fh:
                 fh.write(rendered_file)
 
     def gen_model_main(self):
         j2_env = Environment(loader=FileSystemLoader('%s/generator_engine' % self.dir_path  ),trim_blocks=True)
-        template = j2_env.get_template('general/')')
+        template = j2_env.get_template('general/Main_HTML.j2')
         rendered_file = template.render({ 'APP' : self.name , 'APPS' :self.Forms  })
         return rendered_file
 
     def gen_model_form_html(self):
         j2_env = Environment(loader=FileSystemLoader('%s/generator_engine' % self.dir_path  ),trim_blocks=True)
-        template = j2_env.get_template('general/')')
+        template = j2_env.get_template('general/Form_HTML.j2')
         rendered_file = template.render({ 'APP' : self.name , 'APPS' :self.Forms  })
         return rendered_file
 
     def gen_model_json(self):
         j2_env = Environment(loader=FileSystemLoader('%s/generator_engine' % self.dir_path  ),trim_blocks=True)
-        template = j2_env.get_template('general/')')
+        template = j2_env.get_template('general/json_import.j2')
         rendered_file = template.render({ 'APP' : self.name , 'APPS' :self.Forms  })
         with open( '%s/tmp/%s/%s' % ( self.dir_path , self.name , 'json_import.py' )  , "w") as fh:
                 fh.write(rendered_file)

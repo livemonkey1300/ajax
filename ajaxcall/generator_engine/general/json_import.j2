@@ -1,20 +1,28 @@
 FORM = {
 {% for key, value in APPS.items() %}
+{% for field in value.fields %}
+{% if field.model.Type == 'number' %} '{{field.Name}}' : { 'price' : {% if field.model.price %}{{ field.model.price }}{% else %}0.0{% endif %} }, {% endif %}
+{% if field.model.Type == 'regular' %} '{{field.Name}}' : { 'price' : {% if field.model.price %}{{ field.model.price }}{% else %}0.0{% endif %} },{% endif %}
+
+{% endfor %}
+{% endfor %}
+{% for key, value in APPS.items() %}
 {% for model in value.models %}
 {% if not model.Choice.fields %}
-  '{{ model.Name }}' : { {% if not model.Choice.fields %}{% for field in model.Choice %}{% if not loop.first %},{% endif %}'{{ field.field }}' : {{ field.extra.price }}{% endfor %}{% endif %} },
+ '{{ model.Name }}' : { {% if not model.Choice.fields %}{% for field in model.Choice %}{% if not loop.first %},{% endif %}'{{ field.field }}' : {{ field.extra.price }}{% endfor %}{% endif %} },
 {% if not model.Choice.fields %}
 {% for field in model.Choice %}
-  '{{ field.field }}' :  { 'price' : {{ field.extra.price }} },
+ '{{ field.field }}' :  { 'price' : {{ field.extra.price }} },
 {% endfor %}
 {% endif %}
 {% else %}
-  '{{ model.Name }}' : { {% for field in model.Choice.fields %}{% if not loop.first %},{% endif %}'{{ field.extra.Value }}' : {% if field.extra.price %}{{ field.extra.price }}{% else %} 0.0 {% endif %} {% endfor %}  },
+ '{{ model.Name }}' : { {% for field in model.Choice.fields %}{% if not loop.first %},{% endif %}'{{ field.extra.Value }}' : {% if field.extra.price %}{{ field.extra.price }}{% else %} 0.0 {% endif %} {% endfor %}  },
 {% endif %}
 {% endfor %}
 {% for field in fields %}
-  '{{field.Name }}' : { 'price' : {% if field.model.price %}{{ field.model.price }}{% else %}0.0{% endif %} }{% if not loop.last %},
+ '{{field.Name }}' : { 'price' : {% if field.model.price %}{{ field.model.price }}{% else %}0.0{% endif %} }{% if not loop.last %},
 {% endif %}
 {% endfor %}
 {% endfor %}
+ 'placeholder' : { 'price' : 0.0 }
 }

@@ -227,9 +227,9 @@ class Model_Inputs(models.Model):
 
     def valid_model_type(self):
         if self.number:
-            return { 'Type' : 'number' , 'field' : True , 'Min' : self.number.min , 'Max' : self.number.max , 'Default' : self.number.default , 'price' : self.number.price }
+            return { 'Type' : 'number' , 'field' : True , 'Min' : self.number.min , 'Max' : self.number.max , 'Default' : self.number.default , 'price' : self.number.price , 'verbose_name' : self.number.Name ,  'nice_name' : self.number.Name }
         if self.regular:
-            return { 'Type' : 'regular' , 'field' : True , 'mod' : self.regular.type.register }
+            return { 'Type' : 'regular' , 'field' : True , 'mod' : self.regular.type.register ,  'verbose_name' : self.regular.Name ,  'nice_name' : self.regular.Name  }
 
     def get_field(self,request=False,Form_Name=''):
         context = { 'Form_Name' : Form_Name }
@@ -320,7 +320,8 @@ class AjaxForm_SUB(models.Model):
 class AjaxForm(models.Model):
     Name = models.CharField(max_length=255)
     Field = models.ManyToManyField(Model_Inputs)
-    SubForm = models.ManyToManyField(AjaxForm_SUB)
+    SubForm = models.ManyToManyField(AjaxForm_SUB,blank=True)
+    user_map = models.BooleanField(default=False)
 
     def get_form_name(self):
         return self.Name.lower().replace(' ','_')

@@ -96,7 +96,7 @@ class Field_Selection_price_Choice(admin.TabularInline):
 
 class AjaxForm_Admin(admin.ModelAdmin):
     fieldsets = [
-        ('Name',               {'fields': ['Name','SubForm']}),
+        ('Name',               {'fields': ['Name','SubForm','user_map']}),
         # ('Field', {'fields': ['Field'], 'classes': ['wide']}),
     ]
     filter_horizontal = ('SubForm',)

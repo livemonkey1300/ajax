@@ -13,5 +13,6 @@ urlpatterns = [
     path('create_virtual_machine', views.create_virtual_machine, name='create_virtual_machine'),
     path('edit_virtual_machine/<int:pk>', views.edit_virtual_machine, name='edit_virtual_machine'),
     path('call', views.ajax_call, name='call'),
-    path('call/<slug:field>', views.ajax_call, name='call'),
+    path('call/<slug:form_name>/', views.ajax_call, name='call'),
+    path('call/<slug:form_name>/<slug:field>', views.ajax_call, name='call'),
 ]

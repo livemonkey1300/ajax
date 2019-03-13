@@ -11,5 +11,6 @@ urlpatterns = [
     path('edit_{{key|lower}}/<int:pk>', views.edit_{{key|lower}}, name='edit_{{key|lower}}'),
 {% endfor %}
     path('call', views.ajax_call, name='call'),
-    path('call/<slug:field>', views.ajax_call, name='call'),
+    path('call/<slug:form_name>/', views.ajax_call, name='call'),
+    path('call/<slug:form_name>/<slug:field>', views.ajax_call, name='call'),
 ]

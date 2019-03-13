@@ -39,7 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'Home.apps.HomeConfig',
     'ajaxcall.apps.AjaxcallConfig',
-    'virtual_machine.apps.VirtualMachineConfig'
+    'virtual_machine.apps.VirtualMachineConfig',
+    'General.apps.GeneralConfig',
+    'crispy_forms',
 ]
 
 MIDDLEWARE = [
@@ -53,6 +55,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'ajax.urls'
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 TEMPLATES = [
     {
