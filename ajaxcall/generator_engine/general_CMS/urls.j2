@@ -1,0 +1,16 @@
+from django.urls import path
+from django.conf.urls import url
+
+from . import views
+
+app_name = '{{APP}}'
+urlpatterns = [
+    path('', views.index, name='index'),
+{% for key, value in APPS.items() %}
+    path('create_{{key|lower}}', views.create_{{key|lower}}, name='create_{{key|lower}}'),
+    path('edit_{{key|lower}}/<int:pk>', views.edit_{{key|lower}}, name='edit_{{key|lower}}'),
+{% endfor %}
+    path('call', views.ajax_call, name='call'),
+    path('call/<slug:form_name>/', views.ajax_call, name='call'),
+    path('call/<slug:form_name>/<slug:field>', views.ajax_call, name='call'),
+]

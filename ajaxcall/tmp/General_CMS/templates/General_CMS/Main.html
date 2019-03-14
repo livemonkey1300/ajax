@@ -12,12 +12,6 @@
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
-    <!-- Load React API -->
-    <script src= "https://unpkg.com/react@16/umd/react.production.min.js"></script>
-    <!-- Load React DOM-->
-    <script src= "https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
-    <!-- Load Babel Compiler -->
-    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
 
     <style>
       .bd-placeholder-img {
@@ -39,7 +33,7 @@
   </head>
   <body style="">
     <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-  <a class="navbar-brand" href="{% url  'General:index'  %}">Application</a>
+  <a class="navbar-brand" href="{% url  'General_CMS:index'  %}">Application</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
@@ -47,43 +41,60 @@
   <div class="collapse navbar-collapse" id="navbarsExampleDefault">
     <ul class="navbar-nav mr-auto">
 
-        <li class="nav-item dropdown">
+    
+
+    <li class="nav-item dropdown">
       <a class="nav-link dropdown-toggle" href="https://getbootstrap.com/docs/4.3/examples/starter-template/#" id="exchange" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">exchange</a>
       <div class="dropdown-menu" aria-labelledby="exchange">
-        <a class="dropdown-item" href="{% url  'General:create_exchange'  %}">New exchange</a>
-      </div>
+        <a class="dropdown-item" href="{% url  'General_CMS:create_exchange'  %}">New exchange</a>
+        {% for i in exchange.item %}
+        <a href="{% url 'General_CMS:edit_exchange' i.id %}  ">Edit {{ i }}</a></br>
+        {% endfor %}
+              </div>
     </li>
-        <li class="nav-item dropdown">
+    
+
+    <li class="nav-item dropdown">
       <a class="nav-link dropdown-toggle" href="https://getbootstrap.com/docs/4.3/examples/starter-template/#" id="voip" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">voip</a>
       <div class="dropdown-menu" aria-labelledby="voip">
-        <a class="dropdown-item" href="{% url  'General:create_voip'  %}">New voip</a>
-      </div>
+        <a class="dropdown-item" href="{% url  'General_CMS:create_voip'  %}">New voip</a>
+        {% for i in voip.item %}
+        <a href="{% url 'General_CMS:edit_voip' i.id %}  ">Edit {{ i }}</a></br>
+        {% endfor %}
+              </div>
     </li>
-        <li class="nav-item dropdown">
+    
+
+    <li class="nav-item dropdown">
       <a class="nav-link dropdown-toggle" href="https://getbootstrap.com/docs/4.3/examples/starter-template/#" id="virtual_machine" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">virtual_machine</a>
       <div class="dropdown-menu" aria-labelledby="virtual_machine">
-        <a class="dropdown-item" href="{% url  'General:create_virtual_machine'  %}">New virtual_machine</a>
-      </div>
+        <a class="dropdown-item" href="{% url  'General_CMS:create_virtual_machine'  %}">New virtual_machine</a>
+        {% for i in virtual_machine.item %}
+        <a href="{% url 'General_CMS:edit_virtual_machine' i.id %}  ">Edit {{ i }}</a></br>
+        {% endfor %}
+              </div>
     </li>
         </ul>
   </div>
 </nav>
 
-<main role="main" class="container" ng-app="App" ng-controller="AppController" >
+<main role="main" class="container">
 
   <div class="starter-template">
     <h1>Bootstrap starter template</h1>
     <p class="lead">
-
-      {% load crispy_forms_tags %}
-      ​<div id="todos-example">Hello World!</div>
-      <form method="post" action="{{ pk }}" >
-        <h1>$ {{ total }} </h1>
-        {% csrf_token %}
-        <table>{{ form|crispy }}</table>
-        <button type="submit">submit</button>
-      </form>
-            <br>
+    {% for i in exchange.item %}
+    {{ i.get_display }}</br>
+    {% endfor %}
+        <br>
+    {% for i in voip.item %}
+    {{ i.get_display }}</br>
+    {% endfor %}
+        <br>
+    {% for i in virtual_machine.item %}
+    {{ i.get_display }}</br>
+    {% endfor %}
+        <br>
     </p>
   </div>
 
@@ -93,76 +104,4 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
-<script type="text/jsx" data-cfasync="false">
-class TodoApp extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { items: [], text: '' };
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-  }
-
-  render() {
-    return (
-      <div>
-        <h3>TODO</h3>
-        <TodoList items={this.state.items} />
-        <form onSubmit={this.handleSubmit}>
-        {% for field in form %}
-          <label htmlFor="{{ field.id_for_label }}">
-            {{ field.label }}
-          </label>
-          <input
-            id="{{ field.id_for_label }}"
-            onChange={this.handleChange}
-            value={this.state.text}
-          />
-          {% endfor %}
-          <button>
-            Add #{this.state.items.length + 1}
-          </button>
-
-        </form>
-      </div>
-    );
-  }
-
-  handleChange(e) {
-    this.setState({ text: e.target.value });
-  }
-
-  handleSubmit(e) {
-    e.preventDefault();
-    if (!this.state.text.length) {
-      return;
-    }
-    const newItem = {
-      text: this.state.text,
-      id: Date.now()
-    };
-    this.setState(state => ({
-      items: state.items.concat(newItem),
-      text: ''
-    }));
-  }
-}
-
-class TodoList extends React.Component {
-  render() {
-    return (
-      <ul>
-        {this.props.items.map(item => (
-          <li key={item.id}>{item.text}</li>
-        ))}
-      </ul>
-    );
-  }
-}
-
-ReactDOM.render(
-  <TodoApp />,
-  document.getElementById('todos-example')
-);
-</script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 </body></html>

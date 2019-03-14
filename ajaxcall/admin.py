@@ -2,7 +2,7 @@ from django.contrib import admin
 
 # Register your models here.
 from .models import Model_Types , Model_Inputs , AjaxForm , Model_Number , Model_Regular , Model_Choices_Group , Model_Choices ,Model_Choices_price , Model_Sub_Choices , AjaxForm_SUB
-from .gen import FieldGen_ALL
+from .gen import FieldGen_ALL , FieldGen_ALL_CMS
 
 def Gen_APP(modeladmin, request, queryset):
     for entery in queryset:
@@ -16,6 +16,14 @@ def Gen_General(modeladmin, request, queryset):
     new_gen =  FieldGen_ALL(entrey_array)
     new_gen.create()
 Gen_General.short_description = "Generate Central"
+
+def Gen_General_CMS(modeladmin, request, queryset):
+    entrey_array = []
+    for entery in queryset:
+        entrey_array.append(entery.get_FieldGen())
+    new_gen =  FieldGen_ALL_CMS(entrey_array)
+    new_gen.create()
+Gen_General_CMS.short_description = "Generate Central CMS"
 
 class ChoiceInline(admin.TabularInline):
     model = Model_Inputs
@@ -101,7 +109,7 @@ class AjaxForm_Admin(admin.ModelAdmin):
     ]
     filter_horizontal = ('SubForm',)
     inlines = [Field_Selection_Choice]
-    actions = [Gen_APP,Gen_General]
+    actions = [Gen_APP,Gen_General,Gen_General_CMS]
 
 class SUBForm_Admin(admin.ModelAdmin):
     filter_horizontal = ('Field',)

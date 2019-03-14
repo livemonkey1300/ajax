@@ -12,12 +12,6 @@
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
-    <!-- Load React API -->
-    <script src= "https://unpkg.com/react@16/umd/react.production.min.js"></script>
-    <!-- Load React DOM-->
-    <script src= "https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
-    <!-- Load Babel Compiler -->
-    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
 
     <style>
       .bd-placeholder-img {
@@ -76,9 +70,8 @@
     <p class="lead">
 
       {% load crispy_forms_tags %}
-      ​<div id="todos-example">Hello World!</div>
       <form method="post" action="{{ pk }}" >
-        <h1>$ {{ total }} </h1>
+        <h1>${% templatetag openvariable %} total {% templatetag closevariable %}</h1>
         {% csrf_token %}
         <table>{{ form|crispy }}</table>
         <button type="submit">submit</button>
@@ -93,76 +86,37 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
-<script type="text/jsx" data-cfasync="false">
-class TodoApp extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { items: [], text: '' };
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-  }
-
-  render() {
-    return (
-      <div>
-        <h3>TODO</h3>
-        <TodoList items={this.state.items} />
-        <form onSubmit={this.handleSubmit}>
-        {% for field in form %}
-          <label htmlFor="{{ field.id_for_label }}">
-            {{ field.label }}
-          </label>
-          <input
-            id="{{ field.id_for_label }}"
-            onChange={this.handleChange}
-            value={this.state.text}
-          />
-          {% endfor %}
-          <button>
-            Add #{this.state.items.length + 1}
-          </button>
-
-        </form>
-      </div>
-    );
-  }
-
-  handleChange(e) {
-    this.setState({ text: e.target.value });
-  }
-
-  handleSubmit(e) {
-    e.preventDefault();
-    if (!this.state.text.length) {
-      return;
-    }
-    const newItem = {
-      text: this.state.text,
-      id: Date.now()
-    };
-    this.setState(state => ({
-      items: state.items.concat(newItem),
-      text: ''
-    }));
-  }
-}
-
-class TodoList extends React.Component {
-  render() {
-    return (
-      <ul>
-        {this.props.items.map(item => (
-          <li key={item.id}>{item.text}</li>
-        ))}
-      </ul>
-    );
-  }
-}
-
-ReactDOM.render(
-  <TodoApp />,
-  document.getElementById('todos-example')
-);
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js" data-cfasync="false" ></script>
+<script data-cfasync="false">
+  var app = angular.module("App", []);
+  app.controller("AppController", function($scope) {
+    var url = "{{ call }}" ;
+    $scope.total = {{ total }}
+      $( "input,select" ).each(function() {
+        $(this).change(function() {
+           var cdata = { 'csrfmiddlewaretoken': '{{ csrf_token }}' };
+           if($( this ).attr( "type" ) == 'checkbox'){
+             var values = '';
+             $.each($("input[name='" + $( this ).attr("name") + "']:checked"), function(){
+               console.log($(this).val())
+               values += $(this).val() + ','
+              });
+              console.log(values)
+             cdata[$( this ).attr( "name")] = values
+           }else{
+             cdata[$( this ).attr( "name") ] = $(this).val()
+            }
+            if($( this ).attr( "type" ) == 'submit'){
+               $.post( {% if pk %}"{{ pk }}"{% endif %}  , $('form').serialize() ).done(function( data ) {
+            })}
+            $.post( url + $( this ).attr( "name" )  , cdata ).done(function( data ) {
+              console.log(data)
+              $scope.total = data.total
+              $scope.$apply()
+            });
+          });
+      })
+  })
 </script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 </body></html>

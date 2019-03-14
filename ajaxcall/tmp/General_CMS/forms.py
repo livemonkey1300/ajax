@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import ModelForm
-from .models import  VOIP ,  VIRTUAL_MACHINE  
+from .models import  EXCHANGE ,  VOIP ,  VIRTUAL_MACHINE  
 from .json_import import FORM
 
 def ajax_init(request,form_name=False,field=False):
@@ -34,6 +34,22 @@ def ajax_init(request,form_name=False,field=False):
     except KeyError:
         session[field_Name] = { 'price' : price , 'value' : value , 'current' : current }
 
+
+class EXCHANGE_Form(forms.ModelForm):
+  class Meta:
+    model = EXCHANGE
+    fields = ( 'exchange_name' , 'business_name','mailbox','office_license','current_email_provider','number_of_employees','business_type','average_size_of_mailbox','migration_required',)
+
+    def get_field(self,request=False,form_name=False):
+      fields = []
+      for item in self.fields.items():
+          field = { 'initial' : item[1].initial , 'name' : item[0] , 'type' : item[1].widget.input_type }
+          try:
+              ajax_init(request,form_name,field)
+          except Exception as e:
+              pass
+          fields.append(field)
+      return fields
 
 class VOIP_Form(forms.ModelForm):
   class Meta:

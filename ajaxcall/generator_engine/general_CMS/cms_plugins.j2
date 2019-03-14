@@ -1,0 +1,22 @@
+from cms.plugin_base import CMSPluginBase
+from cms.plugin_pool import plugin_pool
+from django.utils.translation import ugettext_lazy as _
+
+from .models import {% for key, value in APPS.items() %} {{key|upper}} {% if loop.last %}{% else %},{% endif %} {% endfor %}
+
+from .json_import import FORM
+
+
+{% for key, value in APPS.items() %}
+@plugin_pool.register_plugin
+class {{key|upper}}Plugin(forms.ModelForm):
+    model = {{key|upper}}
+    name = _("Hello Plugin")
+    render_template = 'General_CMS/{{key|lower}}.html'
+    cache = False
+
+    def render(self, context, instance, placeholder):
+        context = super({{key|upper}}Plugin, self).render(context, instance, placeholder)
+        return context
+
+{% endfor %}

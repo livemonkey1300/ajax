@@ -4,8 +4,8 @@ from django.urls import reverse
 from django.http import HttpResponse
 import json
 
-from .models import  EXCHANGE ,  VOIP ,  VIRTUAL_MACHINE  
-from .forms import  EXCHANGE_Form ,  VOIP_Form ,  VIRTUAL_MACHINE_Form  
+from .models import  VOIP ,  VIRTUAL_MACHINE  
+from .forms import  VOIP_Form ,  VIRTUAL_MACHINE_Form  
 from .json_import import FORM
 
 
@@ -13,7 +13,6 @@ from .json_import import FORM
 
 def index(request):
   context = {}
-  context.update({ 'exchange' : { 'item' : EXCHANGE.objects.all() , 'edit' : 'edit_exchange' ,  'create' : 'create_exchange' }})
   context.update({ 'voip' : { 'item' : VOIP.objects.all() , 'edit' : 'edit_voip' ,  'create' : 'create_voip' }})
   context.update({ 'virtual_machine' : { 'item' : VIRTUAL_MACHINE.objects.all() , 'edit' : 'edit_virtual_machine' ,  'create' : 'create_virtual_machine' }})
   return render(request, 'General/Main.html', context )
@@ -24,37 +23,6 @@ def get_price(request,form_name):
   for key , val in session.items():
       total += float(val['current'])
   return total
-
-def create_exchange(request):
-    if request.method == 'POST':
-        form = EXCHANGE_Form(request.POST)
-        form.get_field(request,'EXCHANGE')
-        if form.is_valid():
-          form.save()
-          return redirect('General:index')
-    else:
-        form = EXCHANGE_Form()
-        form.get_field(request,'EXCHANGE')
-    location = reverse('General:create_exchange')
-    call = reverse('General:call' , kwargs={'form_name': 'EXCHANGE' } )
-    return render(request, 'General/form.html', {'form': form , 'pk' : location , 'call' : call , 'total' :  get_price(request,'EXCHANGE')  })
-
-
-
-def edit_exchange(request,pk):
-    exchange_instance = get_object_or_404(EXCHANGE, pk=pk)
-    if request.method == 'POST':
-        form = EXCHANGE_Form(request.POST,instance=exchange_instance)
-        form.get_field(request,'EXCHANGE')
-        if form.is_valid():
-          form.save()
-          return redirect('General:index')
-    else:
-        form = EXCHANGE_Form(instance=exchange_instance)
-        form.get_field(request,'EXCHANGE')
-    location = reverse('General:edit_exchange' , kwargs={'pk': pk} )
-    call = reverse('General:call' , kwargs={'form_name': 'EXCHANGE' } )
-    return render(request, 'General/form.html', {'form': form , 'pk' : location , 'call' : call , 'total' :  get_price(request,'EXCHANGE')  } )
 
 def create_voip(request):
     if request.method == 'POST':

@@ -4,8 +4,8 @@ from django.urls import reverse
 from django.http import HttpResponse
 import json
 
-from .models import  EXCHANGE ,  VOIP ,  VIRTUAL_MACHINE
-from .forms import  EXCHANGE_Form ,  VOIP_Form ,  VIRTUAL_MACHINE_Form
+from .models import  EXCHANGE ,  VOIP ,  VIRTUAL_MACHINE  
+from .forms import  EXCHANGE_Form ,  VOIP_Form ,  VIRTUAL_MACHINE_Form  
 from .json_import import FORM
 
 
@@ -16,14 +16,14 @@ def index(request):
   context.update({ 'exchange' : { 'item' : EXCHANGE.objects.all() , 'edit' : 'edit_exchange' ,  'create' : 'create_exchange' }})
   context.update({ 'voip' : { 'item' : VOIP.objects.all() , 'edit' : 'edit_voip' ,  'create' : 'create_voip' }})
   context.update({ 'virtual_machine' : { 'item' : VIRTUAL_MACHINE.objects.all() , 'edit' : 'edit_virtual_machine' ,  'create' : 'create_virtual_machine' }})
-  return render(request, 'General/Main.html', context )
+  return render(request, 'General_CMS/Main.html', context )
 
 def get_price(request,form_name):
   session = request.session[form_name]
   total = 0
   for key , val in session.items():
       total += float(val['current'])
-  return round(total,2)
+  return total
 
 def create_exchange(request):
     if request.method == 'POST':
@@ -31,13 +31,13 @@ def create_exchange(request):
         form.get_field(request,'EXCHANGE')
         if form.is_valid():
           form.save()
-          return redirect('General:index')
+          return redirect('General_CMS:index')
     else:
         form = EXCHANGE_Form()
         form.get_field(request,'EXCHANGE')
-    location = reverse('General:create_exchange')
+    location = reverse('General_CMS:create_exchange')
     call = reverse('General:call' , kwargs={'form_name': 'EXCHANGE' } )
-    return render(request, 'General/form.html', {'form': form , 'pk' : location , 'call' : call , 'total' :  get_price(request,'EXCHANGE')})
+    return render(request, 'General_CMS/form.html', {'form': form , 'pk' : location , 'call' : call , 'total' :  get_price(request,'EXCHANGE')  })
 
 
 
@@ -48,13 +48,13 @@ def edit_exchange(request,pk):
         form.get_field(request,'EXCHANGE')
         if form.is_valid():
           form.save()
-          return redirect('General:index')
+          return redirect('General_CMS:index')
     else:
         form = EXCHANGE_Form(instance=exchange_instance)
         form.get_field(request,'EXCHANGE')
-    location = reverse('General:edit_exchange' , kwargs={'pk': pk} )
+    location = reverse('General_CMS:edit_exchange' , kwargs={'pk': pk} )
     call = reverse('General:call' , kwargs={'form_name': 'EXCHANGE' } )
-    return render(request, 'General/form.html', {'form': form , 'pk' : location , 'call' : call , 'total' :  get_price(request,'EXCHANGE')  } )
+    return render(request, 'General_CMS/form.html', {'form': form , 'pk' : location , 'call' : call , 'total' :  get_price(request,'EXCHANGE')  } )
 
 def create_voip(request):
     if request.method == 'POST':
@@ -62,13 +62,13 @@ def create_voip(request):
         form.get_field(request,'VOIP')
         if form.is_valid():
           form.save()
-          return redirect('General:index')
+          return redirect('General_CMS:index')
     else:
         form = VOIP_Form()
         form.get_field(request,'VOIP')
-    location = reverse('General:create_voip')
+    location = reverse('General_CMS:create_voip')
     call = reverse('General:call' , kwargs={'form_name': 'VOIP' } )
-    return render(request, 'General/form.html', {'form': form , 'pk' : location , 'call' : call , 'total' :  get_price(request,'VOIP') })
+    return render(request, 'General_CMS/form.html', {'form': form , 'pk' : location , 'call' : call , 'total' :  get_price(request,'VOIP')  })
 
 
 
@@ -79,13 +79,13 @@ def edit_voip(request,pk):
         form.get_field(request,'VOIP')
         if form.is_valid():
           form.save()
-          return redirect('General:index')
+          return redirect('General_CMS:index')
     else:
         form = VOIP_Form(instance=voip_instance)
         form.get_field(request,'VOIP')
-    location = reverse('General:edit_voip' , kwargs={'pk': pk} )
+    location = reverse('General_CMS:edit_voip' , kwargs={'pk': pk} )
     call = reverse('General:call' , kwargs={'form_name': 'VOIP' } )
-    return render(request, 'General/form.html', {'form': form , 'pk' : location , 'call' : call , 'total' :  get_price(request,'VOIP')  } )
+    return render(request, 'General_CMS/form.html', {'form': form , 'pk' : location , 'call' : call , 'total' :  get_price(request,'VOIP')  } )
 
 def create_virtual_machine(request):
     if request.method == 'POST':
@@ -93,13 +93,13 @@ def create_virtual_machine(request):
         form.get_field(request,'VIRTUAL_MACHINE')
         if form.is_valid():
           form.save()
-          return redirect('General:index')
+          return redirect('General_CMS:index')
     else:
         form = VIRTUAL_MACHINE_Form()
         form.get_field(request,'VIRTUAL_MACHINE')
-    location = reverse('General:create_virtual_machine')
+    location = reverse('General_CMS:create_virtual_machine')
     call = reverse('General:call' , kwargs={'form_name': 'VIRTUAL_MACHINE' } )
-    return render(request, 'General/form.html', {'form': form , 'pk' : location , 'call' : call , 'total' :  get_price(request,'VIRTUAL_MACHINE')  })
+    return render(request, 'General_CMS/form.html', {'form': form , 'pk' : location , 'call' : call , 'total' :  get_price(request,'VIRTUAL_MACHINE')  })
 
 
 
@@ -110,27 +110,14 @@ def edit_virtual_machine(request,pk):
         form.get_field(request,'VIRTUAL_MACHINE')
         if form.is_valid():
           form.save()
-          return redirect('General:index')
+          return redirect('General_CMS:index')
     else:
         form = VIRTUAL_MACHINE_Form(instance=virtual_machine_instance)
         form.get_field(request,'VIRTUAL_MACHINE')
-    location = reverse('General:edit_virtual_machine' , kwargs={'pk': pk} )
+    location = reverse('General_CMS:edit_virtual_machine' , kwargs={'pk': pk} )
     call = reverse('General:call' , kwargs={'form_name': 'VIRTUAL_MACHINE' } )
-    return render(request, 'General/form.html', {'form': form , 'pk' : location , 'call' : call , 'total' :  get_price(request,'VIRTUAL_MACHINE')  } )
+    return render(request, 'General_CMS/form.html', {'form': form , 'pk' : location , 'call' : call , 'total' :  get_price(request,'VIRTUAL_MACHINE')  } )
 
-
-def cache_session( request , FormName ):
-    request.session.modified = True
-    request.session['cache'] = []
-    if request.method == 'POST':
-        form = VIRTUAL_MACHINE_Form(request.POST)
-        if form.is_valid():
-            form.cleaned_data
-            try:
-                request.session['cache'].append(form.cleaned_data)
-            else:
-                request.session['cache'] = [ form.cleaned_data ]
-    return HttpResponse(json.dumps({ 'success' : True , 'cache' :request.session['cache']}), content_type="application/json")
 
 
 def ajax_call(request,form_name=False,field=False):
