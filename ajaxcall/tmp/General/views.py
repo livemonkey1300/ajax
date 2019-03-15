@@ -4,8 +4,8 @@ from django.urls import reverse
 from django.http import HttpResponse
 import json
 
-from .models import  VOIP ,  VIRTUAL_MACHINE  
-from .forms import  VOIP_Form ,  VIRTUAL_MACHINE_Form  
+from .models import  VOIP  
+from .forms import  VOIP_Form  
 from .json_import import FORM
 
 
@@ -14,7 +14,6 @@ from .json_import import FORM
 def index(request):
   context = {}
   context.update({ 'voip' : { 'item' : VOIP.objects.all() , 'edit' : 'edit_voip' ,  'create' : 'create_voip' }})
-  context.update({ 'virtual_machine' : { 'item' : VIRTUAL_MACHINE.objects.all() , 'edit' : 'edit_virtual_machine' ,  'create' : 'create_virtual_machine' }})
   return render(request, 'General/Main.html', context )
 
 def get_price(request,form_name):
@@ -29,8 +28,11 @@ def create_voip(request):
         form = VOIP_Form(request.POST)
         form.get_field(request,'VOIP')
         if form.is_valid():
-          form.save()
-          return redirect('General:index')
+          if request.user.is_authenticated:
+            form.save()
+            return redirect('General:index')
+          else:
+            return render(request, 'General/mail.html', {'form': form.cleaned_data ,  'total' :  get_price(request,'VOIP') })
     else:
         form = VOIP_Form()
         form.get_field(request,'VOIP')
@@ -41,6 +43,7 @@ def create_voip(request):
 
 
 def edit_voip(request,pk):
+  if request.user.is_authenticated:
     voip_instance = get_object_or_404(VOIP, pk=pk)
     if request.method == 'POST':
         form = VOIP_Form(request.POST,instance=voip_instance)
@@ -54,37 +57,8 @@ def edit_voip(request,pk):
     location = reverse('General:edit_voip' , kwargs={'pk': pk} )
     call = reverse('General:call' , kwargs={'form_name': 'VOIP' } )
     return render(request, 'General/form.html', {'form': form , 'pk' : location , 'call' : call , 'total' :  get_price(request,'VOIP')  } )
-
-def create_virtual_machine(request):
-    if request.method == 'POST':
-        form = VIRTUAL_MACHINE_Form(request.POST)
-        form.get_field(request,'VIRTUAL_MACHINE')
-        if form.is_valid():
-          form.save()
-          return redirect('General:index')
-    else:
-        form = VIRTUAL_MACHINE_Form()
-        form.get_field(request,'VIRTUAL_MACHINE')
-    location = reverse('General:create_virtual_machine')
-    call = reverse('General:call' , kwargs={'form_name': 'VIRTUAL_MACHINE' } )
-    return render(request, 'General/form.html', {'form': form , 'pk' : location , 'call' : call , 'total' :  get_price(request,'VIRTUAL_MACHINE')  })
-
-
-
-def edit_virtual_machine(request,pk):
-    virtual_machine_instance = get_object_or_404(VIRTUAL_MACHINE, pk=pk)
-    if request.method == 'POST':
-        form = VIRTUAL_MACHINE_Form(request.POST,instance=virtual_machine_instance)
-        form.get_field(request,'VIRTUAL_MACHINE')
-        if form.is_valid():
-          form.save()
-          return redirect('General:index')
-    else:
-        form = VIRTUAL_MACHINE_Form(instance=virtual_machine_instance)
-        form.get_field(request,'VIRTUAL_MACHINE')
-    location = reverse('General:edit_virtual_machine' , kwargs={'pk': pk} )
-    call = reverse('General:call' , kwargs={'form_name': 'VIRTUAL_MACHINE' } )
-    return render(request, 'General/form.html', {'form': form , 'pk' : location , 'call' : call , 'total' :  get_price(request,'VIRTUAL_MACHINE')  } )
+  else:
+    return redirect('General:index')
 
 
 

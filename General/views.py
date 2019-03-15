@@ -119,18 +119,7 @@ def edit_virtual_machine(request,pk):
     return render(request, 'General/form.html', {'form': form , 'pk' : location , 'call' : call , 'total' :  get_price(request,'VIRTUAL_MACHINE')  } )
 
 
-def cache_session( request , FormName ):
-    request.session.modified = True
-    request.session['cache'] = []
-    if request.method == 'POST':
-        form = VIRTUAL_MACHINE_Form(request.POST)
-        if form.is_valid():
-            form.cleaned_data
-            try:
-                request.session['cache'].append(form.cleaned_data)
-            else:
-                request.session['cache'] = [ form.cleaned_data ]
-    return HttpResponse(json.dumps({ 'success' : True , 'cache' :request.session['cache']}), content_type="application/json")
+
 
 
 def ajax_call(request,form_name=False,field=False):

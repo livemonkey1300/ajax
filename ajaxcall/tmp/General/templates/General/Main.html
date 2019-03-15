@@ -52,17 +52,6 @@
         {% endfor %}
               </div>
     </li>
-    
-
-    <li class="nav-item dropdown">
-      <a class="nav-link dropdown-toggle" href="https://getbootstrap.com/docs/4.3/examples/starter-template/#" id="virtual_machine" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">virtual_machine</a>
-      <div class="dropdown-menu" aria-labelledby="virtual_machine">
-        <a class="dropdown-item" href="{% url  'General:create_virtual_machine'  %}">New virtual_machine</a>
-        {% for i in virtual_machine.item %}
-        <a href="{% url 'General:edit_virtual_machine' i.id %}  ">Edit {{ i }}</a></br>
-        {% endfor %}
-              </div>
-    </li>
         </ul>
   </div>
 </nav>
@@ -73,10 +62,6 @@
     <h1>Bootstrap starter template</h1>
     <p class="lead">
     {% for i in voip.item %}
-    {{ i.get_display }}</br>
-    {% endfor %}
-        <br>
-    {% for i in virtual_machine.item %}
     {{ i.get_display }}</br>
     {% endfor %}
         <br>

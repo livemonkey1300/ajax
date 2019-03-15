@@ -101,8 +101,8 @@ class FieldGen:
 
 
 class FieldGen_ALL:
-    def __init__(self,Form=[]):
-        self.name = 'General'
+    def __init__(self,Form=[],name='General'):
+        self.name = name
         self.dir_path = os.path.dirname(os.path.realpath(__file__))
         self.Form = Form
         self.Forms = {}
@@ -129,6 +129,7 @@ class FieldGen_ALL:
         self.gen_templates()
         self.gen_model_json()
         self.get_rendered_template()
+        self.gen_model_accounts()
 
     def gen_model(self):
         j2_env = Environment(loader=FileSystemLoader('%s/generator_engine' % self.dir_path  ),trim_blocks=True)
@@ -163,6 +164,13 @@ class FieldGen_ALL:
         template = j2_env.get_template('general/forms.j2')
         rendered_file = template.render({ 'APP' : self.name , 'APPS' :self.Forms  })
         with open( '%s/tmp/%s/%s' % ( self.dir_path , self.name , 'forms.py' )  , "w") as fh:
+                fh.write(rendered_file)
+
+    def gen_model_accounts(self):
+        j2_env = Environment(loader=FileSystemLoader('%s/generator_engine' % self.dir_path  ),trim_blocks=True)
+        template = j2_env.get_template('general/accounts.j2')
+        rendered_file = template.render({ 'APP' : self.name , 'APPS' :self.Forms  })
+        with open( '%s/tmp/%s/%s' % ( self.dir_path , self.name , 'accounts.py' )  , "w") as fh:
                 fh.write(rendered_file)
 
     def gen_model_main(self):

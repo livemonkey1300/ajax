@@ -33,8 +33,11 @@ def create_{{key|lower}}(request):
         form = {{key|upper}}_Form(request.POST)
         form.get_field(request,'{{key|upper}}')
         if form.is_valid():
-          form.save()
-          return redirect('{{APP}}:index')
+          if request.user.is_authenticated:
+            form.save()
+            return redirect('{{APP}}:index')
+          else:
+            return render(request, '{{APP}}/mail.html', {'form': form.cleaned_data ,  'total' :  get_price(request,'{{key|upper}}') })
     else:
         form = {{key|upper}}_Form()
         form.get_field(request,'{{key|upper}}')
@@ -45,6 +48,7 @@ def create_{{key|lower}}(request):
 
 
 def edit_{{key|lower}}(request,pk):
+  if request.user.is_authenticated:
     {{key|lower}}_instance = get_object_or_404({{key|upper}}, pk=pk)
     if request.method == 'POST':
         form = {{key|upper}}_Form(request.POST,instance={{key|lower}}_instance)
@@ -58,6 +62,8 @@ def edit_{{key|lower}}(request,pk):
     location = reverse('{{APP}}:edit_{{key|lower}}' , kwargs={'pk': pk} )
     call = reverse('General:call' , kwargs={'form_name': '{{key|upper}}' } )
     return render(request, '{{APP}}/form.html', {'form': form , 'pk' : location , 'call' : call , 'total' :  get_price(request,'{{key|upper}}')  } )
+  else:
+    return redirect('{{APP}}:index')
 
 {% endfor %}
 
