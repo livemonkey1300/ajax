@@ -3,10 +3,21 @@ class {{Title}}(models.Model):
 {% for i in APP.Field.all() %}
 {% set ref = i.get_field_to_render() %}
 {% if ref.item == 'regular' %}
-  {{i.get_model_name()}} =  {{ ref.field.type.register }}({% if  ref.field.type.Name == 'text' %}default='{{ i.Name}}',{% endif %}verbose_name='{{ i.Name}}',null=True,blank=True)
+  {{i.get_model_name()}} =  {{ ref.field.type.register }}(max_length=255,{% if  ref.field.type.Name == 'text' %}default='{{ i.Name}}',{% endif %}verbose_name='{{ i.Name}}',null=True,blank=True)
 {% endif%}
 {% if ref.item == 'number' %}
-  {{i.get_model_name()}} =  models.IntegerField(default={{ref.field.default}},validators=[MinValueValidator({{ref.field.min}}), MaxValueValidator({{ref.field.max}}),verbose_name='{{ i.Name}}' )
+  {{i.get_model_name()}} =  models.IntegerField(default={{ref.field.default}},validators=[MinValueValidator({{ref.field.min}}), MaxValueValidator({{ref.field.max}})],verbose_name='{{ i.Name}}' )
+{% endif%}
+{% if ref.item == 'choices' %}
+{% if  ref.field.get_field_expand() %}
+{% set choices = ref.field.get_field_choice()[0] %}
+  {{i.get_model_name()}} = models.CharField(max_length=255,choices={{i.get_model_name()|upper}}_CHOICE,default='{{choices.Value}}',)
+{% else %}
+{% set choices = ref.field.get_field_choice() %}
+{% for z in choices %}
+  {{z.get_choice_name()}} = models.BooleanField(default=False,verbose_name='{{z.Value}}')
+{% endfor %}
+{% endif%}
 {% endif%}
 {% if loop.last %}
 

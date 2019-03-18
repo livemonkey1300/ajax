@@ -1,24 +1,3 @@
-from django.shortcuts import render , redirect
-from django.shortcuts import get_object_or_404
-from django.urls import reverse
-from django.http import HttpResponse
-import json
-
-from .json_import import FORM
-
-
-
-
-
-def get_price(request,form_name):
-  session = request.session[form_name]
-  total = 0
-  for key , val in session.items():
-      total += float(val['current'])
-  return total
-
-class {{Title}}(models.Model):
-
 def create_{{Title|lower}}(request):
     if request.method == 'POST':
         form = {{Title}}_Form(request.POST)
@@ -26,74 +5,30 @@ def create_{{Title|lower}}(request):
         if form.is_valid():
           if request.user.is_authenticated:
             form.save()
-            return redirect('{{APP}}:index')
+            return redirect('{{Master}}:index')
           else:
-            return render(request, '{{APP}}/mail.html', {'form': form.cleaned_data ,  'total' :  get_price(request,'{{Title}}') })
+            return render(request, '{{Master}}/Main/mail.html', {'form': form.cleaned_data ,  'total' :  get_price(request,'{{Title}}') })
     else:
-        form = {{key|upper}}_Form()
-        form.get_field(request,'{{Title|lower}}')
-    location = reverse('{{APP}}:create_{{Title|lower}}')
+        form = {{Title}}_Form()
+        form.get_field(request,'{{Title}}')
+    location = reverse('{{Master}}:create_{{Title|lower}}')
     call = reverse('General:call' , kwargs={'form_name': '{{Title}}' } )
-    return render(request, '{{APP}}/form.html', {'form': form , 'pk' : location , 'call' : call , 'total' :  get_price(request,'{{Title}}')  })
+    return render(request, '{{Master}}/form.html', {'form': form , 'pk' : location , 'call' : call , 'total' :  get_price(request,'{{Title}}')  })
 
 def edit_{{Title|lower}}(request,pk):
   if request.user.is_authenticated:
     {{Title|lower}}_instance = get_object_or_404({{Title}}, pk=pk)
     if request.method == 'POST':
         form = {{Title}}_Form(request.POST,instance={{Title|lower}}_instance)
-        form.get_field(request,'{{Title|lower}}')
+        form.get_field(request,'{{Title}}')
         if form.is_valid():
           form.save()
-          return redirect('{{APP}}:index')
+          return redirect('{{Master}}:index')
     else:
         form = {{Title}}_Form(instance={{Title|lower}}_instance)
         form.get_field(request,'{{Title}}')
-    location = reverse('{{APP}}:edit_{{Title|lower}}' , kwargs={'pk': pk} )
+    location = reverse('{{Master}}:edit_{{Title|lower}}' , kwargs={'pk': pk} )
     call = reverse('General:call' , kwargs={'form_name': '{{Title}}' } )
-    return render(request, '{{APP}}/form.html', {'form': form , 'pk' : location , 'call' : call , 'total' :  get_price(request,'{{Title}}')  } )
+    return render(request, '{{Master}}/form.html', {'form': form , 'pk' : location , 'call' : call , 'total' :  get_price(request,'{{Title}}')  } )
   else:
-    return redirect('{{APP}}:index')
-
-
-
-
-def ajax_call(request,form_name=False,field=False):
-    remove = False
-    if request.method == 'POST' and field and form_name :
-      request.session.modified = True
-      session = ''
-      try:
-          session = request.session[form_name]
-      except KeyError:
-          request.session[form_name] = {}
-          session = request.session[form_name]
-      try :
-        if session[field]['value'] == 'on,':
-            remove = True
-        session[field]['value'] = request.POST.get(field)
-        try:
-            if not remove:
-                session[field]['price'] = FORM[field][session[field]['value']]
-            else:
-                session[field]['price'] = 0
-        except KeyError:
-            try:
-                session[field]['price'] = FORM[field]['price']
-            except KeyError:
-                pass
-      except KeyError:
-          session[field] = {}
-          session[field]['value'] = request.POST.get(field)
-          try:
-              session[field]['price'] = FORM[field][session[field]['value']]
-          except KeyError:
-              try:
-                  session[field]['price'] = FORM[field]['price']
-              except KeyError:
-                  session[field]['price'] = 0
-          session[field]['current'] = 0
-      try:
-         session[field]['current'] = float(session[field]['value']) *  session[field]['price']
-      except Exception as e:
-         session[field]['current'] = session[field]['price'] *  1
-    return HttpResponse(json.dumps({ 'success' : True , 'field' : session[field]['value'] , 'price' : session[field]['price'] , 'current' : session[field]['current'] , 'total'  : get_price(request,form_name) }), content_type="application/json")
+    return redirect('{{Master}}:index')

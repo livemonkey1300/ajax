@@ -11,15 +11,20 @@ from django.contrib.auth.views import auth_login
 from django.contrib.auth import logout
 from django.contrib.auth.models import User
 
-from .forms import SignUpForm ,  VIRTUAL_MACHINE_Form  
-from .models import  VIRTUAL_MACHINE  
-from .json_import import FORM
+
+from .models import TIME_MANAGEMENT ,EXCHANGE ,VOIP ,VIRTUAL_MACHINE 
+from .forms import SignUpForm , TIME_MANAGEMENT_Form ,EXCHANGE_Form ,VOIP_Form ,VIRTUAL_MACHINE_Form 
+
+from .json_import import PRICE_TABLE
 
 
 @login_required(login_url='General:login')
 def home(request):
     context = {}
-    context.update({ 'virtual_machine' : { 'item' : VIRTUAL_MACHINE.objects.all() , 'edit' : 'edit_virtual_machine' ,  'create' : 'create_virtual_machine' }})
+    context.update({ 'time_management' : { 'item' : TIME_MANAGEMENT.objects.all() }})
+    context.update({ 'exchange' : { 'item' : EXCHANGE.objects.all() }})
+    context.update({ 'voip' : { 'item' : VOIP.objects.all() }})
+    context.update({ 'virtual_machine' : { 'item' : VIRTUAL_MACHINE.objects.all() }})
     return render(request, 'General/Home.html' ,  context )
 
 
@@ -42,6 +47,24 @@ def signup(request):
                 user = authenticate(username=username, password=raw_password)
                 auth_login(request, user)
                 current = request.user
+                try:
+                  time_management_form = TIME_MANAGEMENT_Form(cache,user=current)
+                  if time_management_form.is_valid():
+                    time_management_form.save()
+                except Exception as e:
+                  pass
+                try:
+                  exchange_form = EXCHANGE_Form(cache,user=current)
+                  if exchange_form.is_valid():
+                    exchange_form.save()
+                except Exception as e:
+                  pass
+                try:
+                  voip_form = VOIP_Form(cache,user=current)
+                  if voip_form.is_valid():
+                    voip_form.save()
+                except Exception as e:
+                  pass
                 try:
                   virtual_machine_form = VIRTUAL_MACHINE_Form(cache,user=current)
                   if virtual_machine_form.is_valid():

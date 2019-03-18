@@ -3,7 +3,29 @@ class {{Title}}_Form(forms.ModelForm):
     model = {{Title}}
     fields = (
 {% for i in APP.Field.all() %}
-      '{{i.get_model_name()}}'{% if loop.last %}{% else %},{% endif %}
-
+{% set ref = i.get_field_to_render() %}
+{% if ref.item == 'choices' %}
+{% if  ref.field.get_field_expand() %}
+	'{{i.get_model_name()}}',
+{% else %}
+{% set choices = ref.field.get_field_choice() %}
+{% for z in choices %}
+    '{{z.get_choice_name()}}',
+{% endfor %}
+{% endif %}
+{% else %}
+    '{{i.get_model_name()}}',
+{% endif %}
 {% endfor %}
     )
+
+  def get_field(self,request=False,form_name=False):
+      fields = []
+      for item in self.fields.items():
+          field = { 'initial' : item[1].initial , 'name' : item[0] , 'type' : item[1].widget.input_type }
+          try:
+              ajax_init(request,form_name,field)
+          except Exception as e:
+              pass
+          fields.append(field)
+      return fields

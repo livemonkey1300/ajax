@@ -17,7 +17,7 @@ import shutil
 def gnd_mod(mod , dir_path , dir , j2file , file ):
     j2_env = Environment(loader=FileSystemLoader('%s/generator_engine' % dir_path ),trim_blocks=True)
     template = j2_env.get_template('tpl/%s.j2' % j2file )
-    rendered_file = template.render({ 'APP' : mod , 'Title' : mod.get_form_name_capital() })
+    rendered_file = template.render({ 'APP' : mod , 'Title' : mod.get_form_name_capital() , 'Master' : 'General'  })
     return { 'file' :   '%s/%s' % ( dir, file ) , 'render' : rendered_file , 'new_name' :  mod.get_form_name() }
 
 
@@ -25,13 +25,16 @@ def gnd(mod):
     render = { 'form' : '' , 'models' : '' , 'urls' : '' , 'render' : '' }
     dir_path = os.path.dirname(os.path.realpath(__file__))
     dir_root = '%s/tmp/%s' % ( dir_path , 'General' )
-    dir_array = ['migrations' , 'templatetags' , 'templates' , 'templates/TPL' , 'templates/MODEL_TPL' , 'templates/Main' ]
+    dir_array = ['migrations' , 'templatetags' , 'templates' ]
     if not os.path.exists( dir_root ):
             os.makedirs( dir_root )
     for i in dir_array:
         if not os.path.exists( '%s/%s' %  ( dir_root , i ) ):
             os.makedirs(  '%s/%s' %  ( dir_root , i ) )
     render.update({ 'models' : gnd_mod(mod , dir_path ,  '%s/%s' %  ( dir_root , 'templates/TPL' ) ,  'models' , 'models.py' ) })
+    render.update({ 'json' : gnd_mod(mod , dir_path ,  '%s/%s' %  ( dir_root , 'templates/TPL' ) ,  'json' , 'json.py' ) })
+    render.update({ 'choice' : gnd_mod(mod , dir_path ,  '%s/%s' %  ( dir_root , 'templates/TPL' ) ,  'choice' , 'choice.py' ) })
+    render.update({ 'choice_import' : gnd_mod(mod , dir_path ,  '%s/%s' %  ( dir_root , 'templates/TPL' ) ,  'choice_import' , 'choice_import.py' ) })
     render.update({ 'form' : gnd_mod(mod , dir_path ,  '%s/%s' %  ( dir_root , 'templates/TPL' ) ,  'form' , 'form.py' ) })
     render.update({ 'urls' : gnd_mod(mod , dir_path ,  '%s/%s' %  ( dir_root , 'templates/TPL' ) ,  'urls' , 'urls.py' ) })
     render.update({ 'views' : gnd_mod(mod , dir_path ,  '%s/%s' %  ( dir_root , 'templates/TPL' ) ,  'views' , 'views.py' ) })
@@ -58,6 +61,9 @@ class Model_Choices(models.Model):
 
     class Meta:
         verbose_name = 'List choice'
+
+    def get_choice_name(self):
+        return self.Value.lower().replace(' ','_').replace('-','_').replace('+','_')
 
 class Model_Sub_Choices(models.Model):
     Value = models.CharField(max_length=255,blank=True, null=True,default="",)
@@ -111,8 +117,16 @@ class Model_Choices_price(models.Model):
     def __str__(self):
         return '%s - %s $' % ( self.Value , self.price )
 
+    def get_choice_name(self):
+        name = self.Value.lower().replace(' ','_').replace('-','_').replace('+','_')
+        if name[0].isdigit():
+            return re.sub("[0-9]", "", name.replace(name[0], '_').replace('_', ''))
+        else:
+            return re.sub("[0-9]", "", name.replace('_', ''))
+
     class Meta:
         verbose_name = 'List choices with price'
+
 
 class Model_Choices_Group(models.Model):
     Name = models.CharField(max_length=255,blank=True, null=True,default="",)
@@ -127,6 +141,18 @@ class Model_Choices_Group(models.Model):
 
     def get_field_name(self):
         return self.Name.lower().replace(' ','_').replace('-','_').replace('+','_')
+
+    def get_field_expand(self):
+        if self.template == 'checkbox':
+            return False
+        else:
+            return True
+
+    def get_field_choice(self):
+        if len(self.choices.all()) > 0 :
+            return self.choices.all().order_by('Value')
+        if len(self.choices_price.all()) > 0 :
+            return self.choices_price.all().order_by('price')
 
     def get_form_choice(self,select=False,nice_name=False):
         ch = []

@@ -4,9 +4,27 @@ from django.urls import reverse
 from django.http import HttpResponse
 import json
 
+from .models import {% for i in models %}{{i.new_name|upper}} {% if loop.last %}{% else %},{% endif %}{% endfor %}
 
-from .json_import import FORM
+from .forms import {% for i in models %}{{i.new_name|upper}}_Form {% if loop.last %}{% else %},{% endif %}{% endfor %}
 
+
+from .json_import import PRICE_TABLE
+
+def index(request):
+  context = {}
+{% for i in models %}
+  context.update({ '{{i.new_name|lower}}' : { 'item' : {{i.new_name|upper}}.objects.all() }})
+{% endfor %}
+  return render(request, '{{APP}}/Main.html', context )
+
+
+def get_price(request,form_name):
+  session = request.session[form_name]
+  total = 0
+  for key , val in session.items():
+      total += float(val['current'])
+  return total
 
 {% for i in views %}
 {{i.render}}
@@ -31,22 +49,22 @@ def ajax_call(request,form_name=False,field=False):
         session[field]['value'] = request.POST.get(field)
         try:
             if not remove:
-                session[field]['price'] = FORM[field][session[field]['value']]
+                session[field]['price'] = PRICE_TABLE[field][session[field]['value']]
             else:
                 session[field]['price'] = 0
         except KeyError:
             try:
-                session[field]['price'] = FORM[field]['price']
+                session[field]['price'] = PRICE_TABLE[field]['price']
             except KeyError:
                 pass
       except KeyError:
           session[field] = {}
           session[field]['value'] = request.POST.get(field)
           try:
-              session[field]['price'] = FORM[field][session[field]['value']]
+              session[field]['price'] = PRICE_TABLE[field][session[field]['value']]
           except KeyError:
               try:
-                  session[field]['price'] = FORM[field]['price']
+                  session[field]['price'] = PRICE_TABLE[field]['price']
               except KeyError:
                   session[field]['price'] = 0
           session[field]['current'] = 0

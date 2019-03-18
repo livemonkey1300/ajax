@@ -1,0 +1,24 @@
+{% for i in APP.Field.all() %}
+{% set ref = i.get_field_to_render() %}
+{% if ref.item == 'regular' %}
+  '{{i.get_model_name()}}' :  { 'price' : 0.0 },
+{% endif%}
+{% if ref.item == 'number' %}
+  '{{i.get_model_name()}}' :  { 'price' : {{ref.field.price}} },
+{% endif%}
+{% if ref.item == 'choices' %}
+{% if  ref.field.get_field_expand() %}
+  '{{i.get_model_name()}}' : {
+{% set choices = ref.field.get_field_choice() %}
+{% for z in choices%}
+  '{{z.Value}}' : {% if z.price %} {{ z.price }} {% else %} 0.0 {% endif %},
+{% endfor %}
+},
+{% else %}
+{% set choices = ref.field.get_field_choice() %}
+{% for z in choices %}
+  '{{z.get_choice_name()}}' :  { 'price' : {% if z.price %} {{ z.price }} {% else %} 0.0 {% endif %} },
+{% endfor %}
+{% endif%}
+{% endif%}
+{% endfor %}

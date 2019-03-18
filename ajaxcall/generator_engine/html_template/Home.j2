@@ -1,0 +1,21 @@
+{% raw %}
+{% extends "./Main/index.html" %}
+
+{% block content %}
+
+<h1>{{APP}}</h1>
+{% endraw %}
+
+{% for i in models %}
+<h2>{{i.new_name|upper}}</h2>
+{% raw %}{% for list in {% endraw %}{{i.new_name|lower}}{% raw %}.item %}
+  {{ list.get_display }}
+{% endfor %}
+
+{% endraw %}
+{% endfor %}
+{% raw %}
+
+{% endblock %}
+
+{% endraw %}

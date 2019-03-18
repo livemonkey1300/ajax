@@ -1,0 +1,133 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="viewport" content="width=device-width" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>DNSnetworks Quote</title>
+<style>
+{% include "./mail.css" %}
+</style>
+</head>
+<body itemscope itemtype="http://schema.org/EmailMessage">
+{% if datas %}
+<table class="body-wrap">
+	<tr>
+		<td></td>
+		<td class="container" width="600">
+			<div class="content">
+				<table class="main" width="100%" cellpadding="0" cellspacing="0">
+					<tr>
+						<td class="content-wrap aligncenter">
+							<table width="100%" cellpadding="0" cellspacing="0">
+								<tr style="background: #0d0d0d; text-align: center;">
+									<td class="content-block" style="text-align: center;">
+										<br>
+										<p style="text-align: center; color: white; font-size: 12px; text-transform: uppercase; line-height: 0; font-family: 'Tahoma', sans-serif; font-weight: 800; letter-spacing: 2px;">Thanks for using </p>
+										<a href="https://app.dnsnetworks.ca"><img src="https://dnsnetworks.ca/wp-content/uploads/Untitled-3.png" alt="DNSnetworks"></a>
+<!--
+								   	<h2 style="font-family: 'Century Gothic', sans-serif; color: #82c122; text-align: center; font-weight: 300; text-transform: uppercase; line-height: 0; text-align: center;"> DNSnetworks
+</h2>
+-->
+										<br>
+									</td>
+								</tr>
+								<tr style="background: #82c122;">
+									<td class="content-block">
+										<h2 class="alignleft" style="font-family: 'Tahoma', sans-serif; font-size: 12px; text-align: center;; margin: 0; vertical-align: middle;"><br>Please Note: 24 hour delay between response
+											<br>
+									</h2>
+									</td>
+								</tr>
+								<tr>
+								<p class="alignleft" style="font-family: 'Tahoma', sans-serif; text-align: center; font-size:12px; font-weight: 600; line-height: 20px;">For faster services please call <a href="tel: 1.866.720.7162" style="color: #82c122;">1.866.720.7162</a> <br> or send an email to <a href="mailto: sales@dnsnetworks.ca" style="color: #00a905;"> sales@dnsnetworks.ca</a>
+											<hr>
+								</tr>
+								<tr>
+									<td class="content-block aligncenter">
+										<table class="invoice" style="font-family: 'Tahoma', sans-serif; width: 100%;">
+											<tr style="font-family: 'Tahoma', sans-serif; font-size: 11px; color: #0d0d0d;">
+												<td><p class="userdetails" style="font-size: 10px; color: gray;">Quote activity from:
+													{{ user.get_username }}
+												{{ ip }}
+											{% now "jS F Y H:i" %}</p>
+													Hello <span style="font-weight: 800; color: #0d0d0d;">{{ user.get_username }},</span>
+													<br>Please see your quote below:
+												</td>
+											</tr>
+											{% for k,v in datas.items %}
+											<tr style="font-family: 'Tahoma', sans-serif;">
+												<td>
+													<br><br>
+													<table class="invoice-items" cellpadding="0" cellspacing="0" style="border: none;">
+													<tr class="total" style="border: none;">
+														<td width="2%"></td>
+														<td class="alignleft" style="font-family: 'Tahoma', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 0.32px; color: #222222;"><span>{{ v.Name }}</span> </td>
+														<td class="alignright" width="60%"></td>
+														<td class="alignright" style="color: #82c122; font-weight: 500; font-family: 'Tahoma', sans-serif;">$ {{ v.total }}0</td>
+														<td width="2%"></td>
+													</tr>
+												</table>
+												<table class="invoice-items" cellpadding="20" cellspacing="0">
+													{% for record in v.data %}
+													<tr>
+															<td width="2%"></td>
+														<td class="alignleft"  style="font-family: 'Tahoma', sans-serif; font-size: 11px; font-weight: 400; letter-spacing: 0.32px; color: #717171;">{{ record.label }}</td>
+														<td class="alignright" width="60%"  style="font-family: 'Tahoma', sans-serif; font-size: 11px; font-weight: 400; letter-spacing: 0.32px; color: #717171;">	{% for manyrecord in record.values %}{% if manyrecord.value %} {{manyrecord.value}} <br> {% endif %} {% endfor %}{{record.value}} </td>
+														<td class="alignright"  style="font-family: 'Tahoma', sans-serif; font-size: 11px; font-weight: 400; letter-spacing: 0.32px; color: #717171;">{% for manyrecord in record.values %}{% if manyrecord.price %} $ {{manyrecord.price}} <br>{% endif %} {% endfor %} {% if record.price %} $ {{record.price}}0 {% endif %} </td>
+															<td width="2%"></td>
+													</tr>
+													{% endfor %}
+												</table>
+											</tr>
+											{% endfor %}
+											<tr>
+												<td><br>
+													<table class="invoice-items" cellpadding="0" cellspacing="0">
+													<tr class="total">
+														<td width="2%"></td>
+														<td class="alignright" style="font-family: 'Tahoma', sans-serif; color: #0d0d0d; text-transform: uppercase; font-size: 12px; font-weight: 800;">Total</td>
+														<td class="alignright" width="60%"></td>
+														<td class="alignright"  style="font-family: 'Tahoma', sans-serif; color: #82c122;">$ {{ total }}0</td>
+															<td width="2%"></td>
+													</tr>
+												</table>
+											</tr>
+										</table>
+									</td>
+								</tr>
+								<tr>
+								</tr>
+								<tr>
+									<td class="content-block aligncenter" style="text-align: center; color: gray; font-family: 'tahoma', sans-serif; font-size: 12px;">
+
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</table>
+				<div class="footer" style="text-align: center; width: 100%;">
+					<table width="100%" cellpadding="0" cellspacing="0" style="background: #0d0d0d;">
+						<tr>
+							<td width="100" class="aligncenter content-block" style="text-align: center; color: gray; font-family: 'tahoma', sans-serif; font-size: 12px;">
+								<p style="line-height: normal; text-align: center; width: 100%;"> <span style="color: #82c122; font-weight: 800; text-align: center; width: 100%;"><a href="https://app.dnsnetworks.ca" style="color: #82c122; text-decoration: none;"><br>DNSnetworks</a><br></span>
+                     				<a href="https://goo.gl/maps/Dm3vZNZGdv52"style="color: gray; text-decoration: none; text-align: center; width: 100%;">18-850 Industrial Avenue, Ottawa, Ontario, K1G 4K2 <br></a>
+                     			<br><br>
+								Questions?<br>Email <a href="mailto:support@dnsnetworks.ca" style="text-decoration: none; color: #82c122; font-weight: 800;"> support@dnsnetworks.ca</a>	</p>
+</td>
+						</tr>
+					<tr><td><p style="text-align: center; color: white; font-family: 'tahoma', sans-serif; font-size: 12px; letter-spacing: 1.50px; ">Connect with us</p></td></tr>
+						<tr style="text-align: center; width: 100%; color: #0d0d0d;"><td><a href="https://www.facebook.com/DNSnetworksCorp"><img src="https://dnsnetworks.ca/wp-content/uploads/1-1.png" width="30px"></a><a href="#" style="color: #0d0d0d;"> | </a><a href="https://www.linkedin.com/company/dnsnetworks/" style="padding: 0 30px;"><img src="https://dnsnetworks.ca/wp-content/uploads/2-1.png" width="30px"></a><a href="#" style="color: #0d0d0d;"> | </a><a href="https://twitter.com/dnsnetworks"><img src="https://dnsnetworks.ca/wp-content/uploads/3-2.png" width="30px"></a></td>
+						</tr>
+					<tr><td><br><Br></td></tr>
+					</table>
+				</div></div>
+		</td>
+		<td></td>
+	</tr>
+</table>
+{% endif %}
+
+</body>
+</html>

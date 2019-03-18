@@ -1,0 +1,56 @@
+{% raw %}
+{% extends "./Main/index.html" %}
+
+{% block content %}
+
+<div class="starter-template">
+  <h1>Bootstrap starter template</h1>
+  <p class="lead">
+
+    {% load crispy_forms_tags %}
+    <form method="post" action="{{ pk }}"  ng-app="App" ng-controller="AppController"  >
+      {% csrf_token %}
+      <table>{{ form|crispy }}</table>
+      <button type="submit">submit</button>
+    </form>
+          <br>
+  </p>
+</div>
+
+{% endblock %}
+
+
+{% block extra_srcipt %}
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js" data-cfasync="false" ></script>
+<script data-cfasync="false">
+  var app = angular.module("App", []);
+  app.controller("AppController", function($scope) {
+    var url = "{{ call }}" ;
+      $( "input,select" ).each(function() {
+        $(this).change(function() {
+           var cdata = { 'csrfmiddlewaretoken': '{{ csrf_token }}' };
+           if($( this ).attr( "type" ) == 'checkbox'){
+             var values = '';
+             $.each($("input[name='" + $( this ).attr("name") + "']:checked"), function(){
+               console.log($(this).val())
+               values += $(this).val() + ','
+              });
+              console.log(values)
+             cdata[$( this ).attr( "name")] = values
+           }else{
+             cdata[$( this ).attr( "name") ] = $(this).val()
+            }
+            if($( this ).attr( "type" ) == 'submit'){
+               $.post( {% if pk %}"{{ pk }}"{% endif %}  , $('form').serialize() ).done(function( data ) {
+            })}
+            $.post( url + $( this ).attr( "name" )  , cdata ).done(function( data ) {
+              console.log(data)
+            });
+          });
+      })
+  })
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+{% endblock %}
+
+{% endraw %}

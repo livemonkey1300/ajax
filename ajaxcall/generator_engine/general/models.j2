@@ -7,7 +7,7 @@ from django.template.loader import get_template
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.auth.models import User
 
-
+from .json_import import {% for i in choice_import %}{{i.render}}{% endfor %} PRICE_TABLE
 
 {% for i in models %}
 {{i.render}}

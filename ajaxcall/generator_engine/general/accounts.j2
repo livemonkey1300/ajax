@@ -11,18 +11,20 @@ from django.contrib.auth.views import auth_login
 from django.contrib.auth import logout
 from django.contrib.auth.models import User
 
-from .forms import SignUpForm , {% for key, value in APPS.items() %} {{key|upper}}_Form {% if loop.last %}{% else %},{% endif %} {% endfor %}
 
-from .models import {% for key, value in APPS.items() %} {{key|upper}} {% if loop.last %}{% else %},{% endif %} {% endfor %}
+from .models import {% for i in models %}{{i.new_name|upper}} {% if loop.last %}{% else %},{% endif %}{% endfor %}
 
-from .json_import import FORM
+from .forms import SignUpForm , {% for i in models %}{{i.new_name|upper}}_Form {% if loop.last %}{% else %},{% endif %}{% endfor %}
+
+
+from .json_import import PRICE_TABLE
 
 
 @login_required(login_url='{{APP}}:login')
 def home(request):
     context = {}
-{% for key, value in APPS.items() %}
-    context.update({ '{{key|lower}}' : { 'item' : {{key|upper}}.objects.all() , 'edit' : 'edit_{{key|lower}}' ,  'create' : 'create_{{key|lower}}' }})
+{% for i in models %}
+    context.update({ '{{i.new_name|lower}}' : { 'item' : {{i.new_name|upper}}.objects.all() }})
 {% endfor %}
     return render(request, '{{APP}}/Home.html' ,  context )
 
@@ -46,11 +48,11 @@ def signup(request):
                 user = authenticate(username=username, password=raw_password)
                 auth_login(request, user)
                 current = request.user
-{% for key, value in APPS.items() %}
+{% for i in models %}
                 try:
-                  {{key|lower}}_form = {{key|upper}}_Form(cache,user=current)
-                  if {{key|lower}}_form.is_valid():
-                    {{key|lower}}_form.save()
+                  {{i.new_name|lower}}_form = {{i.new_name|upper}}_Form(cache,user=current)
+                  if {{i.new_name|lower}}_form.is_valid():
+                    {{i.new_name|lower}}_form.save()
                 except Exception as e:
                   pass
 {% endfor %}

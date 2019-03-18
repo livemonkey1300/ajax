@@ -1,0 +1,1 @@
+{% for i in APP.Field.all() %}{% set ref = i.get_field_to_render() %}{% if ref.item == 'choices' %}{% if  ref.field.get_field_expand() %}{{i.get_model_name()|upper}}_CHOICE ,{% endif%}{% endif%}{% endfor %}

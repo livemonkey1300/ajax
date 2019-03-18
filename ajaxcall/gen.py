@@ -122,13 +122,34 @@ class FieldGen_ALL:
         self.gen_model()
         self.gen_urls()
         self.gen_views()
+        self.gen_form()
         self.get_rendered_template()
+        self.get_rendered_main_html()
+        self.gen_init()
+        self.gen_admin()
+        self.gen_menu_tag()
+        self.gen_json()
+        self.gen_zip_file()
 
     def gen_model(self):
         j2_env = Environment(loader=FileSystemLoader('%s/generator_engine' % self.dir_path  ),trim_blocks=True)
         template = j2_env.get_template('general/models.j2')
-        rendered_file = template.render({ 'APP' : self.name , 'models' : self.Forms['models'] , 'APPS' : self.name  })
+        rendered_file = template.render({ 'APP' : self.name , 'models' : self.Forms['models'] , 'choice_import' : self.Forms['choice_import'] , 'APPS' : self.name  })
         with open( '%s/tmp/%s/%s' % ( self.dir_path , self.name , 'models.py' )  , "w") as fh:
+                fh.write(rendered_file)
+
+    def gen_json(self):
+        j2_env = Environment(loader=FileSystemLoader('%s/generator_engine' % self.dir_path  ),trim_blocks=True)
+        template = j2_env.get_template('general/json_import.j2')
+        rendered_file = template.render({ 'APP' : self.name , 'json' : self.Forms['json'] , 'model_choices' : self.Forms['choice'] , 'APPS' : self.name  })
+        with open( '%s/tmp/%s/%s' % ( self.dir_path , self.name , 'json_import.py' )  , "w") as fh:
+                fh.write(rendered_file)
+
+    def gen_form(self):
+        j2_env = Environment(loader=FileSystemLoader('%s/generator_engine' % self.dir_path  ),trim_blocks=True)
+        template = j2_env.get_template('general/forms.j2')
+        rendered_file = template.render({ 'APP' : self.name , 'forms' : self.Forms['form']  , 'models' : self.Forms['models'] , 'APPS' : self.name  })
+        with open( '%s/tmp/%s/%s' % ( self.dir_path , self.name , 'forms.py' )  , "w") as fh:
                 fh.write(rendered_file)
 
     def gen_urls(self):
@@ -141,7 +162,7 @@ class FieldGen_ALL:
     def gen_views(self):
         j2_env = Environment(loader=FileSystemLoader('%s/generator_engine' % self.dir_path  ),trim_blocks=True)
         template = j2_env.get_template('general/views.j2')
-        rendered_file = template.render({ 'APP' : self.name , 'views' : self.Forms['views'] , 'APPS' : self.name  })
+        rendered_file = template.render({ 'APP' : self.name , 'views' : self.Forms['views'] , 'models' : self.Forms['models'] , 'APPS' : self.name  })
         with open( '%s/tmp/%s/%s' % ( self.dir_path , self.name , 'views.py' )  , "w") as fh:
                 fh.write(rendered_file)
 
@@ -155,6 +176,87 @@ class FieldGen_ALL:
                 os.makedirs( path2 )
             with open( '%s/%s' % ( path2 , '%s.html' % i['new_name'])  , "w") as fh:
                     fh.write(i['render'])
+
+    def get_rendered_main_html(self):
+        j2_env = Environment(loader=FileSystemLoader('%s/generator_engine' % self.dir_path  ),trim_blocks=True)
+        path1 = '%s/tmp/%s/%s' % ( self.dir_path , self.name , 'templates')
+        path2 = '%s/%s/Main' % ( path1 ,  self.name )
+        path3 = '%s/%s/TAG_TPL' % ( path1 ,  self.name )
+        path4 = '%s/%s' % ( path1 ,  self.name )
+        path5 = '%s/%s/Main/CSS' % ( path1 ,  self.name )
+        Main_htmls = ['footer','head','index','menu','mail']
+        tag_htmls = ['menu_tag']
+        root_htmls = ['Form','Main','Home']
+        root_htmls_css = ['mail_css']
+        if not os.path.exists( path2 ):
+            os.makedirs( path2 )
+        if not os.path.exists( path3 ):
+            os.makedirs( path3 )
+        if not os.path.exists( path5 ):
+            os.makedirs( path5 )
+        for i in Main_htmls:
+            template = j2_env.get_template('html_template/%s.j2' % i )
+            rendered_file = template.render({ 'APP' : self.name })
+            with open( '%s/%s' % ( path2 , '%s.html' % i)  , "w") as fh:
+                    fh.write(rendered_file)
+        for i in tag_htmls:
+            template = j2_env.get_template('html_template/%s.j2' % i )
+            rendered_file = template.render({ 'APP' : self.name })
+            with open( '%s/%s' % ( path3 , '%s.html' % i)  , "w") as fh:
+                    fh.write(rendered_file)
+        for i in root_htmls:
+            template = j2_env.get_template('html_template/%s.j2' % i )
+            rendered_file = template.render({ 'APP' : self.name , 'models' : self.Forms['models'] })
+            with open( '%s/%s' % ( path4 , '%s.html' % i)  , "w") as fh:
+                    fh.write(rendered_file)
+        for i in root_htmls_css:
+            template = j2_env.get_template('html_template/%s.j2' % i )
+            rendered_file = template.render({ 'APP' : self.name , 'models' : self.Forms['models'] })
+            with open( '%s/%s' % ( path5 , '%s.css' % i)  , "w") as fh:
+                    fh.write(rendered_file)
+
+    def gen_init(self):
+        j2_env = Environment(loader=FileSystemLoader('%s/generator_engine' % self.dir_path  ),trim_blocks=True)
+        template = j2_env.get_template('general/__init__.j2')
+        rendered_file = template.render({ 'APP' : self.name })
+        make_init = ['templatetags' , '' , 'migrations' ]
+        for i in make_init:
+            with open( '%s/tmp/%s/%s' % ( self.dir_path , self.name , '%s/__init__.py' % i )  , "w") as fh:
+                    fh.write(rendered_file)
+        template = j2_env.get_template('general/tests.j2')
+        rendered_file = template.render({ 'APP' : self.name })
+        with open( '%s/tmp/%s/%s' % ( self.dir_path , self.name , '/tests.py' )  , "w") as fh:
+                        fh.write(rendered_file)
+        template = j2_env.get_template('general/apps.j2')
+        rendered_file = template.render({ 'APP' : self.name })
+        with open( '%s/tmp/%s/%s' % ( self.dir_path , self.name , '/apps.py' )  , "w") as fh:
+                        fh.write(rendered_file)
+        template = j2_env.get_template('general/accounts.j2')
+        rendered_file = template.render({ 'APPS' : self.name  ,  'APP' : self.name , 'models' : self.Forms['models'] })
+        with open( '%s/tmp/%s/%s' % ( self.dir_path , self.name , '/accounts.py' )  , "w") as fh:
+                        fh.write(rendered_file)
+        template = j2_env.get_template('general/doc.j2')
+        rendered_file = template.render({ 'APPS' : self.name  ,  'APP' : self.name , 'models' : self.Forms['models'] })
+        with open( '%s/tmp/%s/%s' % ( self.dir_path , self.name , '/doc.txt' )  , "w") as fh:
+                        fh.write(rendered_file)
+
+
+    def gen_admin(self):
+        j2_env = Environment(loader=FileSystemLoader('%s/generator_engine' % self.dir_path  ),trim_blocks=True)
+        template = j2_env.get_template('general/admin.j2')
+        rendered_file = template.render({ 'APP' : self.name  , 'models' : self.Forms['models'] , 'APPS' : self.name  })
+        with open( '%s/tmp/%s/%s' % ( self.dir_path , self.name , 'admin.py' )  , "w") as fh:
+                fh.write(rendered_file)
+
+    def gen_menu_tag(self):
+        j2_env = Environment(loader=FileSystemLoader('%s/generator_engine' % self.dir_path  ),trim_blocks=True)
+        template = j2_env.get_template('general/menu_tag.j2')
+        rendered_file = template.render({ 'APP' : self.name  , 'models' : self.Forms['models'] , 'APPS' : self.name  })
+        with open( '%s/tmp/%s/%s' % ( self.dir_path , self.name , 'templatetags/menu_tag.py' )  , "w") as fh:
+                fh.write(rendered_file)
+
+    def gen_zip_file(self):
+        shutil.make_archive('%s/tmp/%s' % ( self.dir_path , self.name ) , 'zip', '%s/tmp/%s' % ( self.dir_path , self.name ))
         # j2_env = Environment(loader=FileSystemLoader('%s/generator_engine' % self.dir_path  ),trim_blocks=True)
         # template = j2_env.get_template('general/models.j2')
         # rendered_file = template.render({ 'APP' : self.name , 'models' : self.Forms['models'] , 'APPS' : self.name  })

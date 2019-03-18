@@ -12,6 +12,9 @@ register = template.Library()
 def get_menu(context):
   content = {}
   urls = []
-  urls.append({ Name : 'time_management' , 'url' : reverse('General:create_time_management') })
-  content.update( { 'urls' : content } )
-  return mark_safe(render_to_string('General/Menu.html' , content ))
+  urls.append({ 'Name' : 'TIME_MANAGEMENT' , 'url' : reverse('General:create_time_management') })
+  urls.append({ 'Name' : 'EXCHANGE' , 'url' : reverse('General:create_exchange') })
+  urls.append({ 'Name' : 'VOIP' , 'url' : reverse('General:create_voip') })
+  urls.append({ 'Name' : 'VIRTUAL_MACHINE' , 'url' : reverse('General:create_virtual_machine') })
+  content.update( { 'urls' : urls } )
+  return mark_safe(render_to_string('General/TAG_TPL/menu_tag.html' , content ))

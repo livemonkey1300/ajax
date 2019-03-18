@@ -1,0 +1,14 @@
+{% for i in APP.Field.all() %}
+{% set ref = i.get_field_to_render() %}
+{% if ref.item == 'choices' %}
+{% if  ref.field.get_field_expand() %}
+{{i.get_model_name()|upper}}_CHOICE = (
+{% set choices = ref.field.get_field_choice() %}
+{% for z in choices%}
+  ( '{{z.Value}}' , '{{z.Value}}' ),
+{% endfor %}
+  )
+
+{% endif%}  
+{% endif%}
+{% endfor %}
