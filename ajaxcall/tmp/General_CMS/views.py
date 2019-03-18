@@ -4,8 +4,8 @@ from django.urls import reverse
 from django.http import HttpResponse
 import json
 
-from .models import  EXCHANGE ,  VOIP ,  VIRTUAL_MACHINE  
-from .forms import  EXCHANGE_Form ,  VOIP_Form ,  VIRTUAL_MACHINE_Form  
+from .models import  TIME_MANAGEMENT  
+from .forms import  TIME_MANAGEMENT_Form  
 from .json_import import FORM
 
 
@@ -13,9 +13,7 @@ from .json_import import FORM
 
 def index(request):
   context = {}
-  context.update({ 'exchange' : { 'item' : EXCHANGE.objects.all() , 'edit' : 'edit_exchange' ,  'create' : 'create_exchange' }})
-  context.update({ 'voip' : { 'item' : VOIP.objects.all() , 'edit' : 'edit_voip' ,  'create' : 'create_voip' }})
-  context.update({ 'virtual_machine' : { 'item' : VIRTUAL_MACHINE.objects.all() , 'edit' : 'edit_virtual_machine' ,  'create' : 'create_virtual_machine' }})
+  context.update({ 'time_management' : { 'item' : TIME_MANAGEMENT.objects.all() , 'edit' : 'edit_time_management' ,  'create' : 'create_time_management' }})
   return render(request, 'General_CMS/Main.html', context )
 
 def get_price(request,form_name):
@@ -25,98 +23,36 @@ def get_price(request,form_name):
       total += float(val['current'])
   return total
 
-def create_exchange(request):
+def create_time_management(request):
     if request.method == 'POST':
-        form = EXCHANGE_Form(request.POST)
-        form.get_field(request,'EXCHANGE')
+        form = TIME_MANAGEMENT_Form(request.POST)
+        form.get_field(request,'TIME_MANAGEMENT')
         if form.is_valid():
           form.save()
           return redirect('General_CMS:index')
     else:
-        form = EXCHANGE_Form()
-        form.get_field(request,'EXCHANGE')
-    location = reverse('General_CMS:create_exchange')
-    call = reverse('General:call' , kwargs={'form_name': 'EXCHANGE' } )
-    return render(request, 'General_CMS/form.html', {'form': form , 'pk' : location , 'call' : call , 'total' :  get_price(request,'EXCHANGE')  })
+        form = TIME_MANAGEMENT_Form()
+        form.get_field(request,'TIME_MANAGEMENT')
+    location = reverse('General_CMS:create_time_management')
+    call = reverse('General:call' , kwargs={'form_name': 'TIME_MANAGEMENT' } )
+    return render(request, 'General_CMS/form.html', {'form': form , 'pk' : location , 'call' : call , 'total' :  get_price(request,'TIME_MANAGEMENT')  })
 
 
 
-def edit_exchange(request,pk):
-    exchange_instance = get_object_or_404(EXCHANGE, pk=pk)
+def edit_time_management(request,pk):
+    time_management_instance = get_object_or_404(TIME_MANAGEMENT, pk=pk)
     if request.method == 'POST':
-        form = EXCHANGE_Form(request.POST,instance=exchange_instance)
-        form.get_field(request,'EXCHANGE')
+        form = TIME_MANAGEMENT_Form(request.POST,instance=time_management_instance)
+        form.get_field(request,'TIME_MANAGEMENT')
         if form.is_valid():
           form.save()
           return redirect('General_CMS:index')
     else:
-        form = EXCHANGE_Form(instance=exchange_instance)
-        form.get_field(request,'EXCHANGE')
-    location = reverse('General_CMS:edit_exchange' , kwargs={'pk': pk} )
-    call = reverse('General:call' , kwargs={'form_name': 'EXCHANGE' } )
-    return render(request, 'General_CMS/form.html', {'form': form , 'pk' : location , 'call' : call , 'total' :  get_price(request,'EXCHANGE')  } )
-
-def create_voip(request):
-    if request.method == 'POST':
-        form = VOIP_Form(request.POST)
-        form.get_field(request,'VOIP')
-        if form.is_valid():
-          form.save()
-          return redirect('General_CMS:index')
-    else:
-        form = VOIP_Form()
-        form.get_field(request,'VOIP')
-    location = reverse('General_CMS:create_voip')
-    call = reverse('General:call' , kwargs={'form_name': 'VOIP' } )
-    return render(request, 'General_CMS/form.html', {'form': form , 'pk' : location , 'call' : call , 'total' :  get_price(request,'VOIP')  })
-
-
-
-def edit_voip(request,pk):
-    voip_instance = get_object_or_404(VOIP, pk=pk)
-    if request.method == 'POST':
-        form = VOIP_Form(request.POST,instance=voip_instance)
-        form.get_field(request,'VOIP')
-        if form.is_valid():
-          form.save()
-          return redirect('General_CMS:index')
-    else:
-        form = VOIP_Form(instance=voip_instance)
-        form.get_field(request,'VOIP')
-    location = reverse('General_CMS:edit_voip' , kwargs={'pk': pk} )
-    call = reverse('General:call' , kwargs={'form_name': 'VOIP' } )
-    return render(request, 'General_CMS/form.html', {'form': form , 'pk' : location , 'call' : call , 'total' :  get_price(request,'VOIP')  } )
-
-def create_virtual_machine(request):
-    if request.method == 'POST':
-        form = VIRTUAL_MACHINE_Form(request.POST)
-        form.get_field(request,'VIRTUAL_MACHINE')
-        if form.is_valid():
-          form.save()
-          return redirect('General_CMS:index')
-    else:
-        form = VIRTUAL_MACHINE_Form()
-        form.get_field(request,'VIRTUAL_MACHINE')
-    location = reverse('General_CMS:create_virtual_machine')
-    call = reverse('General:call' , kwargs={'form_name': 'VIRTUAL_MACHINE' } )
-    return render(request, 'General_CMS/form.html', {'form': form , 'pk' : location , 'call' : call , 'total' :  get_price(request,'VIRTUAL_MACHINE')  })
-
-
-
-def edit_virtual_machine(request,pk):
-    virtual_machine_instance = get_object_or_404(VIRTUAL_MACHINE, pk=pk)
-    if request.method == 'POST':
-        form = VIRTUAL_MACHINE_Form(request.POST,instance=virtual_machine_instance)
-        form.get_field(request,'VIRTUAL_MACHINE')
-        if form.is_valid():
-          form.save()
-          return redirect('General_CMS:index')
-    else:
-        form = VIRTUAL_MACHINE_Form(instance=virtual_machine_instance)
-        form.get_field(request,'VIRTUAL_MACHINE')
-    location = reverse('General_CMS:edit_virtual_machine' , kwargs={'pk': pk} )
-    call = reverse('General:call' , kwargs={'form_name': 'VIRTUAL_MACHINE' } )
-    return render(request, 'General_CMS/form.html', {'form': form , 'pk' : location , 'call' : call , 'total' :  get_price(request,'VIRTUAL_MACHINE')  } )
+        form = TIME_MANAGEMENT_Form(instance=time_management_instance)
+        form.get_field(request,'TIME_MANAGEMENT')
+    location = reverse('General_CMS:edit_time_management' , kwargs={'pk': pk} )
+    call = reverse('General:call' , kwargs={'form_name': 'TIME_MANAGEMENT' } )
+    return render(request, 'General_CMS/form.html', {'form': form , 'pk' : location , 'call' : call , 'total' :  get_price(request,'TIME_MANAGEMENT')  } )
 
 
 

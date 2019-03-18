@@ -1,0 +1,49 @@
+from django.db import models
+
+from django.template import loader, Context
+from django.template.loader import render_to_string
+from django.utils.safestring import mark_safe
+from django.template.loader import get_template
+from django.core.validators import MaxValueValidator, MinValueValidator
+from django.contrib.auth.models import User
+
+{% for key, value in APPS.items() %}
+
+class {{key|upper}}(models.Model):
+{% if value.user_map %}  user = models.ForeignKey(User,default=1,on_delete=models.CASCADE)
+{% endif %}
+  {{key|lower}}_name = models.CharField(max_length=255,blank=True, null=True,default="",)
+{% for field in value.fields %}
+{% if field.model.Type == 'number' %}  {{field.Name}} = models.IntegerField(default={{ field.model.Default }},validators=[MinValueValidator({{ field.model.Min }}), MaxValueValidator({{ field.model.Max }})]) {% endif %}
+{% if field.model.Type == 'regular' %}  {{field.Name}} = {{ field.model.mod }} {% endif %}
+
+{% endfor %}
+{% for model in value.models %}
+{% if model.Choice %}
+{% if model.Choice.select %}
+  {{model.Choice.select|upper}}_CHOICE = ({% for choice in model.Choice.fields %}('{{choice.field}}','{{choice.verbose_name}}'){% if loop.last %}{% else %},{% endif %}{% endfor %})
+  {% for choice in model.Choice.fields %}{% if loop.first %}{{model.Choice.select|lower}} = models.CharField(max_length=255,choices={{model.Choice.select|upper}}_CHOICE,default='{{choice.field}}',)
+{% endif %}
+{% endfor %}
+{% else %}
+{% for choice in model.Choice %}
+  {{ choice.field }}  = models.BooleanField(default=False,verbose_name='{{ choice.verbose_name }}')
+{% endfor %}
+{% endif %}
+{% endif %}
+{% endfor %}
+
+
+  def __str__(self):
+      return self.{{key|lower}}_name
+
+  def get_display(self):
+    content = { 'data' : self }
+    return mark_safe(render_to_string('General/{{key|lower}}.html' , content ))
+
+  class Meta:
+      verbose_name = '{{key|title}}'
+
+{% endfor %}
+
+{{ models }}

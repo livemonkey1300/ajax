@@ -8,6 +8,39 @@ from abc import ABC, abstractmethod
 from .gen import FieldGen
 import re
 
+from jinja2 import Environment
+from jinja2 import FileSystemLoader
+import os
+import shutil
+
+
+def gnd_mod(mod , dir_path , dir , j2file , file ):
+    j2_env = Environment(loader=FileSystemLoader('%s/generator_engine' % dir_path ),trim_blocks=True)
+    template = j2_env.get_template('tpl/%s.j2' % j2file )
+    rendered_file = template.render({ 'APP' : mod , 'Title' : mod.get_form_name_capital() })
+    return { 'file' :   '%s/%s' % ( dir, file ) , 'render' : rendered_file , 'new_name' :  mod.get_form_name() }
+
+
+def gnd(mod):
+    render = { 'form' : '' , 'models' : '' , 'urls' : '' , 'render' : '' }
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    dir_root = '%s/tmp/%s' % ( dir_path , 'General' )
+    dir_array = ['migrations' , 'templatetags' , 'templates' , 'templates/TPL' , 'templates/MODEL_TPL' , 'templates/Main' ]
+    if not os.path.exists( dir_root ):
+            os.makedirs( dir_root )
+    for i in dir_array:
+        if not os.path.exists( '%s/%s' %  ( dir_root , i ) ):
+            os.makedirs(  '%s/%s' %  ( dir_root , i ) )
+    render.update({ 'models' : gnd_mod(mod , dir_path ,  '%s/%s' %  ( dir_root , 'templates/TPL' ) ,  'models' , 'models.py' ) })
+    render.update({ 'form' : gnd_mod(mod , dir_path ,  '%s/%s' %  ( dir_root , 'templates/TPL' ) ,  'form' , 'form.py' ) })
+    render.update({ 'urls' : gnd_mod(mod , dir_path ,  '%s/%s' %  ( dir_root , 'templates/TPL' ) ,  'urls' , 'urls.py' ) })
+    render.update({ 'views' : gnd_mod(mod , dir_path ,  '%s/%s' %  ( dir_root , 'templates/TPL' ) ,  'views' , 'views.py' ) })
+    render.update({ 'render' : gnd_mod(mod , dir_path ,  '%s/%s' %  ( dir_root , 'templates/MODEL_TPL' ) ,  'models_html' , '%s.html' % mod.get_form_name() )  })
+    return render
+
+
+
+
 class Model_Types(models.Model):
     Name = models.CharField(max_length=255,unique=True)
     register = models.CharField(max_length=255,default="")
@@ -93,7 +126,7 @@ class Model_Choices_Group(models.Model):
         return self.Name
 
     def get_field_name(self):
-        return self.Name.lower().replace(' ','_')
+        return self.Name.lower().replace(' ','_').replace('-','_').replace('+','_')
 
     def get_form_choice(self,select=False,nice_name=False):
         ch = []
@@ -182,7 +215,7 @@ class Model_Regular(models.Model):
         return self.Name
 
     def get_field_name(self):
-        return self.Name.lower().replace(' ','_')
+        return self.Name.lower().replace(' ','_').replace('-','_').replace('+','_')
 
     def get_field(self,request=False,session=False,model_name=False):
         value = self.value
@@ -202,7 +235,7 @@ class Model_Inputs(models.Model):
         return '%s Priority : %s' % (self.Name,self.priority)
 
     def get_model_name(self):
-        return self.Name.lower().replace(' ','_')
+        return self.Name.lower().replace(' ','_').replace('-','_').replace('+','_')
 
     def get_model_name_print(self):
         print(self.Name.lower().replace(' ','_'))
@@ -214,6 +247,14 @@ class Model_Inputs(models.Model):
             return True
         if self.choices:
             return False
+
+    def get_field_to_render(self):
+        if self.number:
+            return { 'item' : 'number' , 'field' : self.number }
+        if self.regular:
+            return  { 'item' : 'regular' , 'field' : self.regular }
+        if self.choices:
+            return  { 'item' : 'choices' , 'field' : self.choices }
 
     def valid_model_entery(self):
         if self.choices:
@@ -229,7 +270,7 @@ class Model_Inputs(models.Model):
         if self.number:
             return { 'Type' : 'number' , 'field' : True , 'Min' : self.number.min , 'Max' : self.number.max , 'Default' : self.number.default , 'price' : self.number.price , 'verbose_name' : self.number.Name ,  'nice_name' : self.number.Name }
         if self.regular:
-            return { 'Type' : 'regular' , 'field' : True , 'mod' : self.regular.type.register ,  'verbose_name' : self.regular.Name ,  'nice_name' : self.regular.Name  }
+            return { 'Type' : 'regular' , 'field' : True , 'mod' : self.regular.type.register ,  'verbose_name' : self.regular.Name ,  'nice_name' : self.regular.Name , 'widgets' : self.regular.type.Name }
 
     def get_field(self,request=False,Form_Name=''):
         context = { 'Form_Name' : Form_Name }
@@ -280,6 +321,9 @@ class AjaxForm_SUB(models.Model):
     def get_form_name(self):
         return self.Name.lower().replace(' ','_')
 
+    def get_form_name_capital(self):
+        return self.Name.upper().replace(' ','_')
+
     def get_form_name_print(self):
         fgen = FieldGen(self)
         fgen.get_dict()
@@ -323,17 +367,21 @@ class AjaxForm(models.Model):
     SubForm = models.ManyToManyField(AjaxForm_SUB,blank=True)
     user_map = models.BooleanField(default=False)
 
+    def get_form_name_capital(self):
+        return self.Name.upper().replace(' ','_')
+
     def get_form_name(self):
         return self.Name.lower().replace(' ','_')
 
     def get_form_name_print(self):
+
         fgen = FieldGen(self)
         fgen.get_dict()
         fgen.create_app_dir()
         print(self.Name.lower().replace(' ','_'))
 
     def get_FieldGen(self):
-        return FieldGen(self)
+        return gnd(self)
 
     def __str__(self):
         return self.Name

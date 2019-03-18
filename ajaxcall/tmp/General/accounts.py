@@ -11,15 +11,15 @@ from django.contrib.auth.views import auth_login
 from django.contrib.auth import logout
 from django.contrib.auth.models import User
 
-from .forms import SignUpForm ,  VOIP_Form  
-from .models import  VOIP  
+from .forms import SignUpForm ,  VIRTUAL_MACHINE_Form  
+from .models import  VIRTUAL_MACHINE  
 from .json_import import FORM
 
 
 @login_required(login_url='General:login')
 def home(request):
     context = {}
-    context.update({ 'voip' : { 'item' : VOIP.objects.all() , 'edit' : 'edit_voip' ,  'create' : 'create_voip' }})
+    context.update({ 'virtual_machine' : { 'item' : VIRTUAL_MACHINE.objects.all() , 'edit' : 'edit_virtual_machine' ,  'create' : 'create_virtual_machine' }})
     return render(request, 'General/Home.html' ,  context )
 
 
@@ -43,9 +43,9 @@ def signup(request):
                 auth_login(request, user)
                 current = request.user
                 try:
-                  voip_form = VOIP_Form(cache,user=current)
-                  if voip_form.is_valid():
-                    voip_form.save()
+                  virtual_machine_form = VIRTUAL_MACHINE_Form(cache,user=current)
+                  if virtual_machine_form.is_valid():
+                    virtual_machine_form.save()
                 except Exception as e:
                   pass
             except IntegrityError:

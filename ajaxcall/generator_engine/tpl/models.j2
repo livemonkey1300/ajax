@@ -1,0 +1,24 @@
+class {{Title}}(models.Model):
+  {{Title|lower}}_name = models.CharField(max_length=255,default='')
+{% for i in APP.Field.all() %}
+{% set ref = i.get_field_to_render() %}
+{% if ref.item == 'regular' %}
+  {{i.get_model_name()}} =  {{ ref.field.type.register }}({% if  ref.field.type.Name == 'text' %}default='{{ i.Name}}',{% endif %}verbose_name='{{ i.Name}}',null=True,blank=True)
+{% endif%}
+{% if ref.item == 'number' %}
+  {{i.get_model_name()}} =  models.IntegerField(default={{ref.field.default}},validators=[MinValueValidator({{ref.field.min}}), MaxValueValidator({{ref.field.max}}),verbose_name='{{ i.Name}}' )
+{% endif%}
+{% if loop.last %}
+
+  def __str__(self):
+    return self.{{Title|lower}}_name
+
+  def get_display(self):
+    content = { 'data' : self }
+    return mark_safe(render_to_string('General/MODEL_TPL/{{Title|lower}}.html' , content ))
+
+  class Meta:
+    verbose_name = '{{APP}}'
+
+{% endif %}
+{% endfor %}

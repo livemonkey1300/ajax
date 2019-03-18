@@ -4,66 +4,13 @@ from django.urls import reverse
 from django.http import HttpResponse
 import json
 
-from .models import {% for key, value in APPS.items() %} {{key|upper}} {% if loop.last %}{% else %},{% endif %} {% endfor %}
-
-from .forms import {% for key, value in APPS.items() %} {{key|upper}}_Form {% if loop.last %}{% else %},{% endif %} {% endfor %}
 
 from .json_import import FORM
 
 
+{% for i in views %}
+{{i.render}}
 
-
-def index(request):
-  context = {}
-{% for key, value in APPS.items() %}
-  context.update({ '{{key|lower}}' : { 'item' : {{key|upper}}.objects.all() , 'edit' : 'edit_{{key|lower}}' ,  'create' : 'create_{{key|lower}}' }})
-{% endfor %}
-  return render(request, '{{APP}}/Main.html', context )
-
-def get_price(request,form_name):
-  session = request.session[form_name]
-  total = 0
-  for key , val in session.items():
-      total += float(val['current'])
-  return total
-
-{% for key, value in APPS.items() %}
-def create_{{key|lower}}(request):
-    if request.method == 'POST':
-        form = {{key|upper}}_Form(request.POST)
-        form.get_field(request,'{{key|upper}}')
-        if form.is_valid():
-          if request.user.is_authenticated:
-            form.save()
-            return redirect('{{APP}}:index')
-          else:
-            return render(request, '{{APP}}/mail.html', {'form': form.cleaned_data ,  'total' :  get_price(request,'{{key|upper}}') })
-    else:
-        form = {{key|upper}}_Form()
-        form.get_field(request,'{{key|upper}}')
-    location = reverse('{{APP}}:create_{{key|lower}}')
-    call = reverse('General:call' , kwargs={'form_name': '{{key|upper}}' } )
-    return render(request, '{{APP}}/form.html', {'form': form , 'pk' : location , 'call' : call , 'total' :  get_price(request,'{{key|upper}}')  })
-
-
-
-def edit_{{key|lower}}(request,pk):
-  if request.user.is_authenticated:
-    {{key|lower}}_instance = get_object_or_404({{key|upper}}, pk=pk)
-    if request.method == 'POST':
-        form = {{key|upper}}_Form(request.POST,instance={{key|lower}}_instance)
-        form.get_field(request,'{{key|upper}}')
-        if form.is_valid():
-          form.save()
-          return redirect('{{APP}}:index')
-    else:
-        form = {{key|upper}}_Form(instance={{key|lower}}_instance)
-        form.get_field(request,'{{key|upper}}')
-    location = reverse('{{APP}}:edit_{{key|lower}}' , kwargs={'pk': pk} )
-    call = reverse('General:call' , kwargs={'form_name': '{{key|upper}}' } )
-    return render(request, '{{APP}}/form.html', {'form': form , 'pk' : location , 'call' : call , 'total' :  get_price(request,'{{key|upper}}')  } )
-  else:
-    return redirect('{{APP}}:index')
 
 {% endfor %}
 

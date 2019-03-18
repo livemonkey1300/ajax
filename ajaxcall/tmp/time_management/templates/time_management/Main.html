@@ -1,0 +1,8 @@
+<ul>
+  <li><a href="{% url 'time_management:create_time_management_QUOTE' %}">New time_management QUOTE </a></li>
+  <ul>
+     {% for i in time_management.item %}
+    <li><a href="{% url 'time_management:edit_time_management_QUOTE' i.id %}  ">Edit {{ i }}</a></li>
+    {% endfor %}
+    </ul>
+    </ul>

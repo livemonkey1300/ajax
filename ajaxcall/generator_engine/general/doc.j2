@@ -1,0 +1,46 @@
+###################################################
+# COPY The Following in {{APP}}_project/settings.py
+{{APP}}_project
+
+# CHANGE 1
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    '{{APP|title}}.apps.{{APP|title}}Config',
+    'crispy_forms',
+]
+
+
+# CHANGE 2
+ADD this line
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+
+###################################################
+# COPY The Following in {{APP}}_project/urls.py
+{{APP}}_project
+
+# CHANGE 1
+
+from django.contrib import admin
+from django.urls import include, path
+from django.conf.urls import url
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    url(r'',  include('{{APP|title}}.urls') ),
+]
+
+
+
+#######################################################
+# INIT YOUR APP
+
+python3 manage.py makemigrations
+python3 manage.py migrate
+python3 manage.py runserver

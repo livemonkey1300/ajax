@@ -8,6 +8,6 @@ FORM = {
   'fax_numbers' : { 'price' : 28.0 },
   'current_phone_provider' : { 'price' : 0.0 },
   'number_of_employees' : { 'price' : 0.0 },
-  'tfs_existing_toll-free_numbers' : { 'price' : 5.0 },
-  'tfs_new_toll-free_numbers' : { 'price' : 5.0 }
+  'tfs_existing_toll_free_numbers' : { 'price' : 5.0 },
+  'tfs_new_toll_free_numbers' : { 'price' : 5.0 }
 }

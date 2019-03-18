@@ -14,7 +14,6 @@ def Gen_General(modeladmin, request, queryset):
     for entery in queryset:
         entrey_array.append(entery.get_FieldGen())
     new_gen =  FieldGen_ALL(entrey_array)
-    new_gen.create()
 Gen_General.short_description = "Generate Central"
 
 def Gen_General_CMS(modeladmin, request, queryset):

@@ -7,9 +7,8 @@ from . import accounts
 app_name = '{{APP}}'
 urlpatterns = [
     path('', views.index, name='index'),
-{% for key, value in APPS.items() %}
-    path('create_{{key|lower}}', views.create_{{key|lower}}, name='create_{{key|lower}}'),
-    path('edit_{{key|lower}}/<int:pk>', views.edit_{{key|lower}}, name='edit_{{key|lower}}'),
+{% for i in urls %}
+{{i.render}}
 {% endfor %}
     path('call', views.ajax_call, name='call'),
     path('call/<slug:form_name>/', views.ajax_call, name='call'),

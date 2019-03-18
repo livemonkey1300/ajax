@@ -1,0 +1,9 @@
+class {{Title}}_Form(forms.ModelForm):
+  class Meta:
+    model = {{Title}}
+    fields = (
+{% for i in APP.Field.all() %}
+      '{{i.get_model_name()}}'{% if loop.last %}{% else %},{% endif %}
+
+{% endfor %}
+    )

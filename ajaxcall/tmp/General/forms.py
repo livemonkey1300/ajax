@@ -1,6 +1,7 @@
 from django import forms
 from django.forms import ModelForm
-from .models import  VOIP  from django.contrib.auth.forms import UserCreationForm
+from .models import  VIRTUAL_MACHINE  
+from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
 
@@ -38,12 +39,17 @@ def ajax_init(request,form_name=False,field=False):
         session[field_Name] = { 'price' : price , 'value' : value , 'current' : current }
 
 
-class VOIP_Form(forms.ModelForm):
+class VIRTUAL_MACHINE_Form(forms.ModelForm):
   class Meta:
-    model = VOIP
-    fields = ( 'voip_name' , 'business_name','extension','locations','did_existing_local_number','did_new_local_number','fax_numbers','current_phone_provider','number_of_employees','tfs_existing_toll-free_numbers','tfs_new_toll-free_numbers','business_type',)
+    model = VIRTUAL_MACHINE
+    fields = ( 'virtual_machine_name' , 'network_throughput','datacenter','operating_system','system_disk','data_disk','memory','vcpu','office2016standard','quickbooks2019','sage2019','sapbusinessone','cylanceaiendpointprotection','webrootsecurityendpoint''businesshoursmfest','monsunest')
 
-    def get_field(self,request=False,form_name=False):
+    widgets = {
+
+       'virtual_machine_name' :  forms.TextInput( attrs={'type': 'text'})
+     }
+
+  def get_field(self,request=False,form_name=False):
       fields = []
       for item in self.fields.items():
           field = { 'initial' : item[1].initial , 'name' : item[0] , 'type' : item[1].widget.input_type }

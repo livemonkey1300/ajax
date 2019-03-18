@@ -1,0 +1,10 @@
+<div class="card">
+  <h5 class="card-header">{{APP}} {% raw %}{{data.{% endraw %}{{Title|lower}}_name{% raw %}}}{% endraw%}</h5>
+  <div class="card-body">
+    <p class="card-text">
+    {% for i in APP.Field.all() %}
+      <p> {{ i.Name }} : {% raw %} {{data.{% endraw %}{{i.get_model_name()}}{% raw %}}}{% endraw%}</p>
+    {% endfor %}
+    <a href="#" class="btn btn-primary">Go somewhere</a>
+  </div>
+</div>
